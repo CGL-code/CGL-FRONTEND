@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  overflow: auto;
+  height: 100vh !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;  
+}
+
+.ReadPage {
+  display: flex;
+  height: 100vh;
+}
+
+.ql-toolbar.ql-snow {
+  @apply bg-white border border-green-700 rounded-t-lg;
+}
+
+.ql-container.ql-snow {
+  @apply border border-green-700 bg-white rounded-b-lg;
+}
+
+.ql-editor {
+  @apply bg-white min-h-[200px] p-4 text-gray-800;
+}
+
+.ql-editor:focus {
+  @apply outline-none;
+}
+
