@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "antd": "^5.24.3",
-    "axios": "^1.8.2",
+    "antd": "^5.29.1",
+    "axios": "^1.13.2",
     "draft-js": "^0.11.7",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.488.0",
@@ -20,7 +20,7 @@
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.5.2",
     "react-quill": "^2.0.0",
-    "react-router-dom": "^7.3.0",
+    "react-router-dom": "^7.10.1",
     "tailwind-scrollbar-hide": "^2.0.0"
   },
   "devDependencies": {
