@@ -149,11 +149,12 @@ export default function BookForm() {
         marginTop: 16,
         borderRadius: 12,
         padding: 0.5,
-        background: "#D9F2D0", // light green container
+        background: "#D9F2D0", 
         maxWidth: 1100,
         marginInline: "auto",
+        border: "6px double #144702ff",
+        padding: "10px"
       }}
-      bordered
     >
       {/* HEADER – matches your form title */}
       <div style={{ textAlign: "center", marginBottom: 16 }}>
@@ -165,7 +166,7 @@ export default function BookForm() {
         </Text>
       </div>
 
-      <Divider style={{ margin: "12px 0 20px" }} />
+      {/* <Divider style={{ margin: "12px 0 20px" }} /> */}
 
       <Form
         form={form}
@@ -188,18 +189,19 @@ export default function BookForm() {
             padding: "10px"
           }}
         >
-          <Title level={5} style={{ marginBottom: 8,
+          <Title level={5} style={{
+            marginBottom: 8,
             color: "#ae1a1aff",
             textAlign: 'center'
-           }}>
+          }}>
             PART 1 – TYPE OF BOOK ENTRY
           </Title>
 
-        {/*}  <Paragraph style={{ marginBottom: 8 }}>
+          {/*}  <Paragraph style={{ marginBottom: 8 }}>
             <Text strong>01.</Text>{" "}
             <Text>Select the type of book entry.</Text>
           </Paragraph>*/}
-            <Text style={{textAlign:"center", display: "block"}}>Select the type of book entry.</Text>
+          <Text style={{ textAlign: "center", display: "block" }}>Select the type of book entry.</Text>
           <Form.Item
             name="entryMode"
             style={{ marginBottom: 4 }}
@@ -215,7 +217,7 @@ export default function BookForm() {
                 marginTop: 4,
               }}
             >
-               {/* <Text>Select the type of book entry.</Text> */}
+              {/* <Text>Select the type of book entry.</Text> */}
               <label style={{ cursor: "pointer" }}>
                 <input
                   type="radio"
@@ -225,8 +227,8 @@ export default function BookForm() {
                   style={{ marginRight: 6 }}
                 />
                 <Text>
-                   
-                  <Text strong>01 – Create Regular series</Text> (work only in Part 3.)  . 
+
+                  <Text strong>01 – Create Regular series</Text> (work only in Part 3.)  .
                 </Text>
               </label>
 
@@ -245,7 +247,7 @@ export default function BookForm() {
             </div>
           </Form.Item>
 
-       {/*   <Paragraph type="secondary" style={{ marginTop: 6, marginBottom: 0 }}>
+          {/*   <Paragraph type="secondary" style={{ marginTop: 6, marginBottom: 0 }}>
             • In <Text strong>Regular</Text> mode, you work only in Part 3.{" "}
             <br />
             • In <Text strong>Delibrate Insert</Text> mode, use Part 2 (03–06) first to
@@ -261,17 +263,23 @@ export default function BookForm() {
           style={{
             marginBottom: 16,
             borderRadius: 10,
+            border: "4px double red",
+            padding: "10px"
           }}
           bodyStyle={{
             opacity: part2Disabled ? 0.5 : 1,
             transition: "opacity 0.2s ease",
           }}
         >
-          <Title level={5} style={{ marginBottom: 8 }}>
+          <Title level={5} style={{
+            marginBottom: 8,
+            color: "#ae1a1aff",
+            textAlign: 'center'
+          }}>
             PART 2 – DELIBERATE INSERT OF A NEW BOOK
           </Title>
 
-       {/*}   <Paragraph style={{ marginBottom: 8 }}>
+          {/*}   <Paragraph style={{ marginBottom: 8 }}>
             <Text strong>03–06.</Text>{" "}
             <Text>
               Choose the reference book (existing M/S) and reason. System will
@@ -281,7 +289,7 @@ export default function BookForm() {
           </Paragraph>  */}
 
           <Row gutter={16}>
-            <Col xs={24} sm={12} md={6}>
+            <Col xs={24} sm={12} md={8}>
               {/* 03 – Reference M.BookNo */}
               <Form.Item
                 label={
@@ -295,23 +303,23 @@ export default function BookForm() {
                 rules={
                   isInsertMode
                     ? [
-                        {
-                          required: true,
-                          message: "Please enter reference M. Book No (03).",
-                        },
-                      ]
+                      {
+                        required: true,
+                        message: "Please enter reference M. Book No (03).",
+                      },
+                    ]
                     : []
                 }
               >
                 <InputNumber
                   disabled={part2Disabled}
-                  style={{ width: "100%" }}
+                  style={{ width: "100%", border: "1px solid black" }}
                   min={0}
                 />
               </Form.Item>
             </Col>
 
-            <Col xs={24} sm={12} md={6}>
+            <Col xs={24} sm={12} md={8}>
               {/* 04 – Reference S.BookNo */}
               <Form.Item
                 label={
@@ -325,23 +333,23 @@ export default function BookForm() {
                 rules={
                   isInsertMode
                     ? [
-                        {
-                          required: true,
-                          message: "Please enter reference S. Book No (04).",
-                        },
-                      ]
+                      {
+                        required: true,
+                        message: "Please enter reference S. Book No (04).",
+                      },
+                    ]
                     : []
                 }
               >
                 <InputNumber
                   disabled={part2Disabled}
-                  style={{ width: "100%" }}
+                  style={{ width: "100%", border: "1px solid black" }}
                   min={0}
                 />
               </Form.Item>
             </Col>
 
-            <Col xs={24} md={12}>
+            <Col xs={24} md={8}>
               {/* 05 – New Book Title */}
               <Form.Item
                 label={<Text strong>05 – New Book Title</Text>}
@@ -349,15 +357,15 @@ export default function BookForm() {
                 rules={
                   isInsertMode
                     ? [
-                        {
-                          required: true,
-                          message: "Please enter the new book title (05).",
-                        },
-                      ]
+                      {
+                        required: true,
+                        message: "Please enter the new book title (05).",
+                      },
+                    ]
                     : []
                 }
               >
-                <Input disabled={part2Disabled} />
+                <Input disabled={part2Disabled} style={{ border: "1px solid black" }} />
               </Form.Item>
             </Col>
           </Row>
@@ -373,6 +381,7 @@ export default function BookForm() {
           >
             <Input.TextArea
               disabled={part2Disabled}
+              style={{ border: "1px solid black" }}
               rows={3}
               placeholder="Short explanation (06) – for future reference / audit."
             />
@@ -397,9 +406,15 @@ export default function BookForm() {
           size="small"
           style={{
             borderRadius: 10,
+            border: "4px double red",
+            padding: "10px"
           }}
         >
-          <Title level={5} style={{ marginBottom: 8 }}>
+          <Title level={5} style={{
+            marginBottom: 8,
+            color: "#ae1a1aff",
+            textAlign: 'center'
+          }}>
             PART 3 – CURRENT BOOK UNDER DEVELOPMENT
           </Title>
 
@@ -421,7 +436,7 @@ export default function BookForm() {
                   { required: true, message: "Please enter M. Book No (07)." },
                 ]}
               >
-                <InputNumber style={{ width: "100%" }} min={0} />
+                <InputNumber style={{ width: "100%", border: "1px solid black" }} min={0} />
               </Form.Item>
             </Col>
 
@@ -434,7 +449,7 @@ export default function BookForm() {
                   { required: true, message: "Please enter S. Book No (08)." },
                 ]}
               >
-                <InputNumber style={{ width: "100%" }} min={0} />
+                <InputNumber style={{ width: "100%", border: "1px solid black" }} min={0} />
               </Form.Item>
             </Col>
 
@@ -444,7 +459,7 @@ export default function BookForm() {
                 label={<Text strong>09 – Book Group No (default 00)</Text>}
                 name="bookGroupNo"
               >
-                <InputNumber style={{ width: "100%" }} min={0} />
+                <InputNumber style={{ width: "100%", border: "1px solid black" }} min={0} />
               </Form.Item>
             </Col>
           </Row>
@@ -457,7 +472,7 @@ export default function BookForm() {
               { required: true, message: "Please enter the book title (10)." },
             ]}
           >
-            <Input />
+            <Input style={{ border: "1px solid black" }} />
           </Form.Item>
 
           {/* 11 – Brief Introduction */}
@@ -472,7 +487,7 @@ export default function BookForm() {
               },
             ]}
           >
-            <Input.TextArea rows={4} />
+            <Input.TextArea rows={4} style={{ border: "1px solid black" }} />
           </Form.Item>
 
           {/* 12 – Optional future preview/display area */}
