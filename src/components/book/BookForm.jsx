@@ -258,7 +258,8 @@ export default function BookForm() {
         {/* ------------------------------------------------- */}
         {/* PART 2 – DELIBERATE INSERT OF A NEW BOOK (03–06)  */}
         {/* ------------------------------------------------- */}
-        <Card
+        {!part2Disabled && (
+<Card
           size="small"
           style={{
             marginBottom: 16,
@@ -349,7 +350,7 @@ export default function BookForm() {
               </Form.Item>
             </Col>
 
-            <Col xs={24} md={8}>
+            <Col md={24}>
               {/* 05 – New Book Title */}
               <Form.Item
                 label={<Text strong>05 – New Book Title</Text>}
@@ -398,6 +399,8 @@ export default function BookForm() {
             </Button>
           </div>
         </Card>
+        )}
+        
 
         {/* ------------------------------------------------ */}
         {/* PART 3 – CURRENT BOOK UNDER DEVELOPMENT (07–12)  */}
