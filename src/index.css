@@ -37,3 +37,44 @@ html, body {
   @apply outline-none;
 }
 
+/* Table outer border */
+.ant-table {
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
+  border-top: 1px solid #000;
+  background-color: #e9f7ef; /* light green */
+}
+
+/* Header */
+.ant-table-thead > tr > th {
+  background-color: #d4efdf !important;
+  border-bottom: 1px solid #000 !important;
+  border-right: 1px solid #000 !important;
+  color: #000;
+}
+
+/* Body cells */
+.ant-table-tbody > tr > td {
+  background-color: #e9f7ef !important;
+  border-bottom: 1px solid #000 !important;
+  border-right: 1px solid #000 !important;
+  color: #000;
+}
+
+/* Hover row – slightly darker green */
+.ant-table-tbody > tr:hover > td {
+  background-color: #c8e6c9 !important;
+}
+
+/* Active / Selected row */
+.ant-table-tbody > tr.ant-table-row-selected > td {
+  background-color: #b7dfb9 !important; /* little darker green */
+}
+
+/* Remove last column right border */
+.ant-table-thead > tr > th:last-child,
+.ant-table-tbody > tr > td:last-child {
+  border-right: none !important;
+}
+
+
