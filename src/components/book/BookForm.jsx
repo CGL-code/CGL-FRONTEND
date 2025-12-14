@@ -244,12 +244,12 @@ export default function BookForm() {
               <Col md={8}>
                 <Form.Item
                   label={
-                  <>
-                    <Text strong>03 – M. Book No</Text>
-                    <br />
-                    <Text type="secondary">(Existing reference)</Text>
-                  </>
-                }
+                    <>
+                      <Text strong>03 – M. Book No</Text>
+                      <br />
+                      <Text type="secondary">(Existing reference)</Text>
+                    </>
+                  }
                   name="refMBookNo"
                   rules={[{ required: true }]}
                 >
@@ -260,12 +260,12 @@ export default function BookForm() {
               <Col md={8}>
                 <Form.Item
                   label={
-                  <>
-                    <Text strong>04 – S. Book No</Text>
-                    <br />
-                    <Text type="secondary">(Existing reference)</Text>
-                  </>
-                }
+                    <>
+                      <Text strong>04 – S. Book No</Text>
+                      <br />
+                      <Text type="secondary">(Existing reference)</Text>
+                    </>
+                  }
                   name="refSBookNo"
                   rules={[{ required: true }]}
                 >
@@ -275,7 +275,7 @@ export default function BookForm() {
             </Row>
 
             <Form.Item label={<Text strong>05 – Existing Book Title</Text>} name="existingBookTitle">
-              <Input disabled style={{border: "1px solid black"}} />
+              <Input disabled style={{ border: "1px solid black" }} />
             </Form.Item>
 
             <Form.Item
@@ -283,7 +283,7 @@ export default function BookForm() {
               name="newBookTitle"
               rules={[{ required: true }]}
             >
-              <Input style={{border: "1px solid black"}}/>
+              <Input style={{ border: "1px solid black" }} />
             </Form.Item>
 
             <Form.Item label={
@@ -291,11 +291,13 @@ export default function BookForm() {
                 06 – Reason for inserting this book (optional)
               </Text>
             } name="insertReason">
-              <Input.TextArea rows={3} style={{border: "1px solid black"}}
-              placeholder="Short explanation (06) – for future reference / audit." />
+              <Input.TextArea rows={3} style={{ border: "1px solid black" }}
+                placeholder="Short explanation (06) – for future reference / audit." />
             </Form.Item>
 
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+              <Button >Create Authors Note</Button>
+              <Button type="primary">View Authors Note</Button>
               <Button onClick={handleViewBooks}>View All Books</Button>
               <Button
                 type="primary"
@@ -324,7 +326,7 @@ export default function BookForm() {
 
           <Row gutter={16}>
             <Col md={6}>
-              <Form.Item name="mBookNo"  label={<Text strong>07 – M. Book No</Text>} rules={[{ required: true }]}>
+              <Form.Item name="mBookNo" label={<Text strong>07 – M. Book No</Text>} rules={[{ required: true }]}>
                 <InputNumber style={{ width: "100%", border: "1px solid black" }} />
               </Form.Item>
             </Col>
@@ -343,7 +345,7 @@ export default function BookForm() {
           </Row>
 
           <Form.Item name="bookTitle" label={<Text strong>10 – Book Title</Text>} rules={[{ required: true }]}>
-            <Input  style={{border: "1px solid black"}}/>
+            <Input style={{ border: "1px solid black" }} />
           </Form.Item>
 
           <Form.Item
@@ -351,7 +353,7 @@ export default function BookForm() {
             label={<Text strong>11 – Brief Introduction of the Book</Text>}
             rules={[{ required: true }]}
           >
-            <Input.TextArea rows={4} style={{border: "1px solid black"}}/>
+            <Input.TextArea rows={4} style={{ border: "1px solid black" }} />
           </Form.Item>
 
           <Paragraph type="secondary" style={{ marginTop: 4 }}>
@@ -362,6 +364,8 @@ export default function BookForm() {
           <Divider style={{ margin: "16px 0 12px" }} />
 
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <Button >Create Authors Note</Button>
+            <Button type="primary">View Authors Note</Button>
             <Button onClick={handleViewBooks}>View All Books</Button>
             <Button
               type="primary"
