@@ -8,8 +8,5 @@ export default defineConfig({
     'global': 'window',  // Polyfill global to window for browser environment
     'process.env': {},   // Avoid "process is not defined" issue in browser
   },
-  optimizeDeps: {
-    include: ['react-quill'],  // Ensure React Quill and draft-js are pre-optimized by Vite
-  },
 });
 
