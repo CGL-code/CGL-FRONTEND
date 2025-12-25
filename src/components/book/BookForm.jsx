@@ -181,7 +181,8 @@ export default function BookForm() {
     <Card
       style={{
         marginTop: 16,
-        maxWidth: 1100,
+        // maxWidth: 1100,
+        maxWidth: 1300,
         marginInline: "auto",
         borderRadius: 12,
         border: "6px double #144702",

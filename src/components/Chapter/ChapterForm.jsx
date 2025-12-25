@@ -278,7 +278,7 @@ export default function ChapterForm() {
   }
 
   return (
-    <div className="chapter-print-root" style={{ padding: 16 }}>
+    <div className="chapter-print-root" style={{ padding: 16, border: "6px double #144702", background: "#D9F2D0", margin: 10, borderRadius: 12, maxWidth: 1300, marginInline: "auto", }}>
       {/* Print rules live INSIDE this component so you don’t have to edit other files */}
       <style>{`
         @media print {
@@ -322,13 +322,17 @@ export default function ChapterForm() {
 
       {/* ONE COLUMN LAYOUT: Window 1 then Window 2 */}
       <Row gutter={[16, 16]}>
-        <Col span={24}>
+        <Col span={24} style={{ padding: 16 }}>
           <Card
             className="print-card"
             title="Window 1 — Identity & Control"
             extra={<Tag color={window1Locked ? "green" : "blue"}>{window1Locked ? "Locked" : "Editable"}</Tag>}
-            style={{ borderRadius: 12 }}
+            style={{ borderRadius: 12, border: "4px double red" }}
           >
+            <Title level={3} style={{ marginTop: 0, textAlign: "center", color: "#ae1a1a", fontSize: "30px" }}>
+              User Interface for Chapter For Chapter Creation
+            </Title>
+
             <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
               <Button type="default" onClick={() => setBookModalOpen(true)} disabled={window1Locked}>
                 Popup List of All Books with Chapter
@@ -353,13 +357,70 @@ export default function ChapterForm() {
                 </div>
               </Col>
 
-              <Col xs={24} sm={12}>
+              {/* <Col xs={24} sm={12}>
                 <Text type="secondary">Chap# (default 10)</Text>
                 <div style={{ marginTop: 4 }}>
                   <Input value={chapterNo} disabled />
                 </div>
-              </Col>
+              </Col> */}
             </Row>
+
+            <div>
+              <Title type="secondary" style={{ fontSize: "20px", fontWeight: 500, color: "black", textAlign: "center", alignItems: "center", justifyContent: "center", border: "1px solid black", padding: "10px", marginTop: 5 }}>System Assigned Fields (Auto)</Title>
+              <Row gutter={12} align="bottom">
+                {/* DSCode */}
+                <Col xs={24} sm={4}>
+                  <Text type="secondary">DSCode</Text>
+                  <Select
+                    style={{ width: "100%", marginTop: 4 }}
+                    options={DS_CODES}
+                    value={activeDSCode}
+                    onChange={setActiveDSCode}
+                    disabled={!window2Enabled}
+                  />
+                </Col>
+
+                {/* MRec */}
+                <Col xs={12} sm={4}>
+                  <Text type="secondary">MRec#</Text>
+                  <Input style={{ marginTop: 4 }} value={pad4(nextMRec)} disabled />
+                </Col>
+
+                {/* SRec */}
+                <Col xs={12} sm={4}>
+                  <Text type="secondary">SRec#</Text>
+                  <Input style={{ marginTop: 4 }} value={pad2(nextSRec)} disabled />
+                </Col>
+
+                {/* System Assigned Fields Label + MB/SB/GP */}
+                <Col xs={24} sm={9}>
+
+
+                  <Row gutter={8} style={{ marginTop: 4 }}>
+                    <Col span={8}>
+                      <Text type="secondary">MB#</Text>
+                      <Input value={sysFields?.MB ?? ""} disabled />
+                    </Col>
+
+                    <Col span={8}>
+                      <Text type="secondary">SB#</Text>
+                      <Input value={sysFields?.SB ?? ""} disabled />
+                    </Col>
+
+                    <Col span={8}>
+                      <Text type="secondary">GP#</Text>
+                      <Input value={sysFields?.GP ?? ""} disabled />
+                    </Col>
+                  </Row>
+                </Col>
+
+                {/* Chap */}
+                <Col xs={24} sm={3}>
+                  <Text type="secondary">Chap# (default 10)</Text>
+                  <Input style={{ marginTop: 4 }} value={chapterNo} disabled />
+                </Col>
+              </Row>
+            </div>
 
             <div style={{ marginTop: 12 }}>
               <Text type="secondary">Book Title (from Book List)</Text>
@@ -377,24 +438,62 @@ export default function ChapterForm() {
             </div>
 
             <div style={{ marginTop: 16 }}>
-              <Title level={5} style={{ marginBottom: 8 }}>
-                System Assigned Fields (Auto)
-              </Title>
+              {/* <div style={{ marginTop: 16 }}>
+                <Row gutter={12} align="bottom">
+                 
+                  <Col xs={24} sm={4}>
+                    <Text type="secondary">DSCode</Text>
+                    <Select
+                      style={{ width: "100%", marginTop: 4 }}
+                      options={DS_CODES}
+                      value={activeDSCode}
+                      onChange={setActiveDSCode}
+                      disabled={!window2Enabled}
+                    />
+                  </Col>
 
-              <Row gutter={12}>
-                <Col xs={24} sm={8}>
-                  <Text type="secondary">MB#</Text>
-                  <Input value={sysFields?.MB ?? ""} disabled />
-                </Col>
-                <Col xs={24} sm={8}>
-                  <Text type="secondary">SB#</Text>
-                  <Input value={sysFields?.SB ?? ""} disabled />
-                </Col>
-                <Col xs={24} sm={8}>
-                  <Text type="secondary">GP#</Text>
-                  <Input value={sysFields?.GP ?? ""} disabled />
-                </Col>
-              </Row>
+                  
+                  <Col xs={12} sm={4}>
+                    <Text type="secondary">MRec#</Text>
+                    <Input style={{ marginTop: 4 }} value={pad4(nextMRec)} disabled />
+                  </Col>
+
+                  
+                  <Col xs={12} sm={4}>
+                    <Text type="secondary">SRec#</Text>
+                    <Input style={{ marginTop: 4 }} value={pad2(nextSRec)} disabled />
+                  </Col>
+
+                  
+                  <Col xs={24} sm={9}>
+                    <Text type="secondary">System Assigned Fields (Auto)</Text>
+
+                    <Row gutter={8} style={{ marginTop: 4 }}>
+                      <Col span={8}>
+                        <Text type="secondary">MB#</Text>
+                        <Input value={sysFields?.MB ?? ""} disabled />
+                      </Col>
+
+                      <Col span={8}>
+                        <Text type="secondary">SB#</Text>
+                        <Input value={sysFields?.SB ?? ""} disabled />
+                      </Col>
+
+                      <Col span={8}>
+                        <Text type="secondary">GP#</Text>
+                        <Input value={sysFields?.GP ?? ""} disabled />
+                      </Col>
+                    </Row>
+                  </Col>
+
+                  
+                  <Col xs={24} sm={3}>
+                    <Text type="secondary">Chap# (default 10)</Text>
+                    <Input style={{ marginTop: 4 }} value={chapterNo} disabled />
+                  </Col>
+                </Row>
+              </div> */}
+
 
               <div style={{ marginTop: 12 }}>
                 <Text type="secondary">BT/CT Special Records</Text>
@@ -405,21 +504,21 @@ export default function ChapterForm() {
                   dataSource={
                     sysFields
                       ? [
-                          {
-                            key: "bt",
-                            label: "BT (Book Title)",
-                            MRec: pad4(sysFields.bt.MRec),
-                            SRec: pad2(sysFields.bt.SRec),
-                            DSCode: sysFields.bt.DSCode,
-                          },
-                          {
-                            key: "ct",
-                            label: "CT (Chapter Title)",
-                            MRec: pad4(sysFields.ct.MRec),
-                            SRec: pad2(sysFields.ct.SRec),
-                            DSCode: sysFields.ct.DSCode,
-                          },
-                        ]
+                        {
+                          key: "bt",
+                          label: "BT (Book Title)",
+                          MRec: pad4(sysFields.bt.MRec),
+                          SRec: pad2(sysFields.bt.SRec),
+                          DSCode: sysFields.bt.DSCode,
+                        },
+                        {
+                          key: "ct",
+                          label: "CT (Chapter Title)",
+                          MRec: pad4(sysFields.ct.MRec),
+                          SRec: pad2(sysFields.ct.SRec),
+                          DSCode: sysFields.ct.DSCode,
+                        },
+                      ]
                       : []
                   }
                   columns={[
@@ -434,12 +533,12 @@ export default function ChapterForm() {
           </Card>
         </Col>
 
-        <Col span={24}>
+        <Col span={24} style={{ padding: 16 }}>
           <Card
             className="print-card"
             title="Window 2 — Content Creation (DSCode + TipTap)"
             extra={<Tag color={window2Enabled ? "green" : "red"}>{window2Enabled ? "Enabled" : "Disabled"}</Tag>}
-            style={{ borderRadius: 12 }}
+            style={{ borderRadius: 12, border: "4px double red" }}
           >
             <Row gutter={12} style={{ marginBottom: 12 }}>
               <Col xs={24} sm={12}>
