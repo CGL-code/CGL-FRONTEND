@@ -278,7 +278,7 @@ export default function ChapterForm() {
   }
 
   return (
-    <div className="chapter-print-root" style={{ padding: 16, border: "6px double #144702", background: "#D9F2D0", margin: 10, borderRadius: 12, maxWidth: 1300, marginInline: "auto", }}>
+    <div className="chapter-print-root" style={{ padding: 16, border: "6px double #144702", background: "#cef58fff", margin: 10, borderRadius: 12, maxWidth: 1300, marginInline: "auto", }}>
       {/* Print rules live INSIDE this component so you don’t have to edit other files */}
       <style>{`
         @media print {
@@ -316,37 +316,43 @@ export default function ChapterForm() {
         }
       `}</style>
 
-      <Title level={3} style={{ marginTop: 0 }}>
+     {/* <Title level={3} style={{ marginTop: 0 }}>
         Chapter UI (One Column) — Window 1 then Window 2
-      </Title>
+      </Title>*/}
 
       {/* ONE COLUMN LAYOUT: Window 1 then Window 2 */}
       <Row gutter={[16, 16]}>
         <Col span={24} style={{ padding: 16 }}>
           <Card
             className="print-card"
-            title="Window 1 — Identity & Control"
+           // title="Window 1 — Identity & Control"
             extra={<Tag color={window1Locked ? "green" : "blue"}>{window1Locked ? "Locked" : "Editable"}</Tag>}
             style={{ borderRadius: 12, border: "4px double red" }}
-          >
-            <Title level={3} style={{ marginTop: 0, textAlign: "center", color: "#ae1a1a", fontSize: "30px" }}>
-              User Interface for Chapter For Chapter Creation
-            </Title>
 
-            <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+
+          >
+            <Title level={3} style={{ marginTop: -42, textAlign: "center", color: "#a82340ef", fontSize: "30px" }}>
+              * User Interface For Chapter Creation*
+            </Title >
+                       
+     <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+      
+              <Button onClick={() => setCdtOpen(true)} disabled={!selectedBook}>
+                Popup Chapter Data Table
+              </Button>           
+
               <Button type="default" onClick={() => setBookModalOpen(true)} disabled={window1Locked}>
                 Popup List of All Books with Chapter
               </Button>
 
-              <Button type="primary" onClick={handleSaveWindow1} disabled={window1Locked}>
-                Save the above
-              </Button>
+       
+ </div>
 
-              <Button onClick={() => setCdtOpen(true)} disabled={!selectedBook}>
-                Popup Chapter Data Table
-              </Button>
-            </div>
 
+
+
+
+              
             <Row gutter={12}>
               <Col xs={24} sm={12}>
                 <Text type="secondary">Status</Text>
@@ -367,6 +373,19 @@ export default function ChapterForm() {
 
             <div>
               <Title type="secondary" style={{ fontSize: "20px", fontWeight: 500, color: "black", textAlign: "center", alignItems: "center", justifyContent: "center", border: "1px solid black", padding: "10px", marginTop: 5 }}>System Assigned Fields (Auto)</Title>
+             
+             
+            <div style={{ marginTop: 12 }}>
+              <Text type="secondary">Book Title (from Book List)</Text>
+              <Input value={selectedBook?.title || ""} placeholder="Select a book…" disabled />
+            </div>
+
+             
+             
+             
+             
+             
+             
               <Row gutter={12} align="bottom">
                 {/* DSCode */}
                 <Col xs={24} sm={4}>
@@ -422,10 +441,19 @@ export default function ChapterForm() {
               </Row>
             </div>
 
-            <div style={{ marginTop: 12 }}>
-              <Text type="secondary">Book Title (from Book List)</Text>
-              <Input value={selectedBook?.title || ""} placeholder="Select a book…" disabled />
+
+
+       <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+            
+              <Button type="primary" onClick={handleSaveWindow1} disabled={window1Locked}>
+                Save the above
+              </Button>             
             </div>
+
+
+
+
+
 
             <div style={{ marginTop: 12 }}>
               <Text type="secondary">Chapter Title (User must enter)</Text>
@@ -436,6 +464,77 @@ export default function ChapterForm() {
                 disabled={window1Locked}
               />
             </div>
+
+ <div>
+             
+              <Row gutter={12} align="bottom">
+                {/* DSCode */}
+                <Col xs={24} sm={4}>
+                  <Text type="secondary">DSCode</Text>
+                  <Select
+                    style={{ width: "100%", marginTop: 4 }}
+                    options={DS_CODES}
+                    value={activeDSCode}
+                    onChange={setActiveDSCode}
+                    disabled={!window2Enabled}
+                  />
+                </Col>
+
+                {/* MRec */}
+                <Col xs={12} sm={4}>
+                  <Text type="secondary">MRec#</Text>
+                  <Input style={{ marginTop: 4 }} value={pad4(nextMRec)} disabled />
+                </Col>
+
+                {/* SRec */}
+                <Col xs={12} sm={4}>
+                  <Text type="secondary">SRec#</Text>
+                  <Input style={{ marginTop: 4 }} value={pad2(nextSRec)} disabled />
+                </Col>
+
+                {/* System Assigned Fields Label + MB/SB/GP */}
+                <Col xs={24} sm={9}>
+
+
+                  <Row gutter={8} style={{ marginTop: 4 }}>
+                    <Col span={8}>
+                      <Text type="secondary">MB#</Text>
+                      <Input value={sysFields?.MB ?? ""} disabled />
+                    </Col>
+
+                    <Col span={8}>
+                      <Text type="secondary">SB#</Text>
+                      <Input value={sysFields?.SB ?? ""} disabled />
+                    </Col>
+
+                    <Col span={8}>
+                      <Text type="secondary">GP#</Text>
+                      <Input value={sysFields?.GP ?? ""} disabled />
+                    </Col>
+                  </Row>
+                </Col>
+
+                {/* Chap */}
+                <Col xs={24} sm={3}>
+                  <Text type="secondary">Chap# (default 10)</Text>
+                  <Input style={{ marginTop: 4 }} value={chapterNo} disabled />
+                </Col>
+              </Row>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             <div style={{ marginTop: 16 }}>
               {/* <div style={{ marginTop: 16 }}>
@@ -493,6 +592,22 @@ export default function ChapterForm() {
                   </Col>
                 </Row>
               </div> */}
+
+            <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+            
+              <Button type="primary" onClick={handleSaveWindow1} disabled={window1Locked}>
+                Save the above
+              </Button>             
+            </div>
+
+
+
+
+
+
+
+
+
 
 
               <div style={{ marginTop: 12 }}>
