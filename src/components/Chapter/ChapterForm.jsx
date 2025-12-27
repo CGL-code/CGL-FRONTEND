@@ -2,7 +2,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Button, Card, Col, Input, Modal, Row, Select, Table, Tag, Typography, message } from "antd";
+import { Button, Card, Col, Input, Modal, Row, Select, Table, Tag, Typography, message, Collapse } from "antd";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -73,7 +73,7 @@ function TipTapBox({ disabled, initialJson, onChangeJson }) {
     <div
       className="cgl-editor-box"
       style={{
-        border: "1px solid #d9d9d9",
+        border: "1px solid black",
         borderRadius: 8,
         padding: 12,
         minHeight: 220,
@@ -97,6 +97,8 @@ export default function ChapterForm() {
   const [chapterNo, setChapterNo] = useState(10); // default as per your document logic
   const [chapterStatus, setChapterStatus] = useState("Draft"); // Draft -> In Progress -> Finalised
   const [window1Locked, setWindow1Locked] = useState(false);
+  const [showBtCt, setShowBtCt] = useState(false);
+
 
   // System assigned fields (Window 1)
   const sysFields = useMemo(() => {
@@ -278,7 +280,7 @@ export default function ChapterForm() {
   }
 
   return (
-    <div className="chapter-print-root" style={{ padding: 16, border: "6px double #144702", background: "#cef58fff", margin: 10, borderRadius: 12, maxWidth: 1300, marginInline: "auto", }}>
+    <div className="chapter-print-root" style={{ padding: 16, border: "6px double #144702", background: "#D9F2D0", margin: 10, borderRadius: 12, maxWidth: 1300, marginInline: "auto", }}>
       {/* Print rules live INSIDE this component so you don’t have to edit other files */}
       <style>{`
         @media print {
@@ -316,52 +318,57 @@ export default function ChapterForm() {
         }
       `}</style>
 
-     {/* <Title level={3} style={{ marginTop: 0 }}>
+      {/* <Title level={3} style={{ marginTop: 0 }}>
         Chapter UI (One Column) — Window 1 then Window 2
       </Title>*/}
 
       {/* ONE COLUMN LAYOUT: Window 1 then Window 2 */}
       <Row gutter={[16, 16]}>
-        <Col span={24} style={{ padding: 16 }}>
+        <Col span={24} style={{ padding: 20 }}>
           <Card
             className="print-card"
-           // title="Window 1 — Identity & Control"
+            // title="Window 1 — Identity & Control"
             extra={<Tag color={window1Locked ? "green" : "blue"}>{window1Locked ? "Locked" : "Editable"}</Tag>}
             style={{ borderRadius: 12, border: "4px double red" }}
-
-
           >
             <Title level={3} style={{ marginTop: -42, textAlign: "center", color: "#a82340ef", fontSize: "30px" }}>
-              * User Interface For Chapter Creation*
+              * User Interface For Chapter Creation *
             </Title >
-                       
-     <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
-      
-              <Button onClick={() => setCdtOpen(true)} disabled={!selectedBook}>
-                Popup Chapter Data Table
-              </Button>           
 
-              <Button type="default" onClick={() => setBookModalOpen(true)} disabled={window1Locked}>
-                Popup List of All Books with Chapter
+            <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap", justifyContent: "flex-end", }}>
+              <Button onClick={() => setCdtOpen(true)} disabled={!selectedBook} style={{ border: "1px solid black" }}>
+                Popup Chapter Data Table
               </Button>
 
-       
- </div>
+              <Button
+                type="default"
+                onClick={() => setBookModalOpen(true)}
+                disabled={window1Locked}
+                style={{ border: "1px solid black" }}
+              >
+                Popup List of All Books with Chapter
+              </Button>
+            </div>
 
-
-
-
-
-              
             <Row gutter={12}>
               <Col xs={24} sm={12}>
-                <Text type="secondary">Status</Text>
-                <div style={{ marginTop: 4 }}>
-                  <Tag color={chapterStatus === "In Progress" ? "orange" : chapterStatus === "Finalised" ? "green" : "blue"}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <Text strong type="">Status : </Text>
+
+                  <Tag
+                    color={
+                      chapterStatus === "In Progress"
+                        ? "orange"
+                        : chapterStatus === "Finalised"
+                          ? "green"
+                          : "blue"
+                    }
+                  >
                     {chapterStatus}
                   </Tag>
                 </div>
               </Col>
+
 
               {/* <Col xs={24} sm={12}>
                 <Text type="secondary">Chap# (default 10)</Text>
@@ -372,26 +379,20 @@ export default function ChapterForm() {
             </Row>
 
             <div>
-              <Title type="secondary" style={{ fontSize: "20px", fontWeight: 500, color: "black", textAlign: "center", alignItems: "center", justifyContent: "center", border: "1px solid black", padding: "10px", marginTop: 5 }}>System Assigned Fields (Auto)</Title>
-             
-             
-            <div style={{ marginTop: 12 }}>
-              <Text type="secondary">Book Title (from Book List)</Text>
-              <Input value={selectedBook?.title || ""} placeholder="Select a book…" disabled />
-            </div>
+              <Title type="secondary" style={{ fontSize: "20px", fontWeight: 500, color: "black", textAlign: "center", alignItems: "center", justifyContent: "center", border: "1px solid black", padding: "10px", marginTop: 15, borderRadius: 8 }}>System Assigned Fields (Auto)</Title>
 
-             
-             
-             
-             
-             
-             
+
+              <div style={{ marginTop: 12 }}>
+                <Text strong type="">Book Title (from Book List)</Text>
+                <Input value={selectedBook?.title || ""} placeholder="Select a book…" disabled style={{ border: "1px solid black", marginTop: 5 }} />
+              </div>
+
               <Row gutter={12} align="bottom">
                 {/* DSCode */}
-                <Col xs={24} sm={4}>
-                  <Text type="secondary">DSCode</Text>
+                <Col xs={24} sm={4} style={{ marginTop: 10 }}>
+                  <Text strong type="" style={{ marginTop: 5 }}>DSCode</Text>
                   <Select
-                    style={{ width: "100%", marginTop: 4 }}
+                    style={{ width: "100%", marginTop: 4, borderRadius: 8, border: "1px solid black" }}
                     options={DS_CODES}
                     value={activeDSCode}
                     onChange={setActiveDSCode}
@@ -401,14 +402,14 @@ export default function ChapterForm() {
 
                 {/* MRec */}
                 <Col xs={12} sm={4}>
-                  <Text type="secondary">MRec#</Text>
-                  <Input style={{ marginTop: 4 }} value={pad4(nextMRec)} disabled />
+                  <Text strong type="" style={{ marginTop: 5 }}>MRec#</Text>
+                  <Input style={{ marginTop: 4, border: "1px solid black" }} value={pad4(nextMRec)} disabled />
                 </Col>
 
                 {/* SRec */}
                 <Col xs={12} sm={4}>
-                  <Text type="secondary">SRec#</Text>
-                  <Input style={{ marginTop: 4 }} value={pad2(nextSRec)} disabled />
+                  <Text strong type="" style={{ marginTop: 5 }}>SRec#</Text>
+                  <Input style={{ marginTop: 4, border: "1px solid black" }} value={pad2(nextSRec)} disabled />
                 </Col>
 
                 {/* System Assigned Fields Label + MB/SB/GP */}
@@ -417,62 +418,58 @@ export default function ChapterForm() {
 
                   <Row gutter={8} style={{ marginTop: 4 }}>
                     <Col span={8}>
-                      <Text type="secondary">MB#</Text>
-                      <Input value={sysFields?.MB ?? ""} disabled />
+                      <Text strong type="" style={{ marginTop: 5 }}>MB#</Text>
+                      <Input style={{ border: "1px solid black" }} value={sysFields?.MB ?? ""} disabled />
                     </Col>
 
                     <Col span={8}>
-                      <Text type="secondary">SB#</Text>
-                      <Input value={sysFields?.SB ?? ""} disabled />
+                      <Text strong type="" style={{ marginTop: 5 }}>SB#</Text>
+                      <Input style={{ border: "1px solid black" }} value={sysFields?.SB ?? ""} disabled />
                     </Col>
 
                     <Col span={8}>
-                      <Text type="secondary">GP#</Text>
-                      <Input value={sysFields?.GP ?? ""} disabled />
+                      <Text strong type="" style={{ marginTop: 5 }}>GP#</Text>
+                      <Input style={{ border: "1px solid black" }} value={sysFields?.GP ?? ""} disabled />
                     </Col>
                   </Row>
                 </Col>
 
                 {/* Chap */}
                 <Col xs={24} sm={3}>
-                  <Text type="secondary">Chap# (default 10)</Text>
-                  <Input style={{ marginTop: 4 }} value={chapterNo} disabled />
+                  <Text strong type="" style={{ marginTop: 5 }}>Chap# (default 10)</Text>
+                  <Input style={{ marginTop: 4, border: "1px solid black" }} value={chapterNo} disabled />
                 </Col>
               </Row>
             </div>
 
 
 
-       <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-            
-              <Button type="primary" onClick={handleSaveWindow1} disabled={window1Locked}>
-                Save the above
-              </Button>             
+            <div style={{ display: "flex", gap: 8, marginBottom: "30px", marginTop: 12, flexWrap: "wrap", justifyContent: "flex-end" }}>
+              <Button type="primary" onClick={handleSaveWindow1} disabled={window1Locked}>Save the above</Button>
             </div>
 
+            <hr style={{ border: "1px solid red" }} />
 
 
-
-
-
-            <div style={{ marginTop: 12 }}>
-              <Text type="secondary">Chapter Title (User must enter)</Text>
+            <div style={{ marginTop: "30px" }}>
+              <Text strong type="">Chapter Title (User must enter)</Text>
               <Input
                 value={chapterTitle}
                 placeholder="Enter Chapter Title"
                 onChange={(e) => setChapterTitle(e.target.value)}
                 disabled={window1Locked}
+                style={{ marginTop: 5, border: "1px solid black" }}
               />
             </div>
 
- <div>
-             
+            <div>
+
               <Row gutter={12} align="bottom">
                 {/* DSCode */}
-                <Col xs={24} sm={4}>
-                  <Text type="secondary">DSCode</Text>
+                <Col xs={24} sm={4} style={{ marginTop: 10 }}>
+                  <Text strong type="" style={{ marginTop: 5 }}>DSCode</Text>
                   <Select
-                    style={{ width: "100%", marginTop: 4 }}
+                    style={{ width: "100%", marginTop: 4, borderRadius: 8, border: "1px solid black" }}
                     options={DS_CODES}
                     value={activeDSCode}
                     onChange={setActiveDSCode}
@@ -482,14 +479,14 @@ export default function ChapterForm() {
 
                 {/* MRec */}
                 <Col xs={12} sm={4}>
-                  <Text type="secondary">MRec#</Text>
-                  <Input style={{ marginTop: 4 }} value={pad4(nextMRec)} disabled />
+                  <Text strong type="" style={{ marginTop: 5 }}>MRec#</Text>
+                  <Input style={{ marginTop: 4, border: "1px solid black" }} value={pad4(nextMRec)} disabled />
                 </Col>
 
                 {/* SRec */}
                 <Col xs={12} sm={4}>
-                  <Text type="secondary">SRec#</Text>
-                  <Input style={{ marginTop: 4 }} value={pad2(nextSRec)} disabled />
+                  <Text strong type="" style={{ marginTop: 5 }}>SRec#</Text>
+                  <Input style={{ marginTop: 4, border: "1px solid black" }} value={pad2(nextSRec)} disabled />
                 </Col>
 
                 {/* System Assigned Fields Label + MB/SB/GP */}
@@ -498,42 +495,29 @@ export default function ChapterForm() {
 
                   <Row gutter={8} style={{ marginTop: 4 }}>
                     <Col span={8}>
-                      <Text type="secondary">MB#</Text>
-                      <Input value={sysFields?.MB ?? ""} disabled />
+                      <Text strong type="" style={{ marginTop: 5 }}>MB#</Text>
+                      <Input style={{ border: "1px solid black" }} value={sysFields?.MB ?? ""} disabled />
                     </Col>
 
                     <Col span={8}>
-                      <Text type="secondary">SB#</Text>
-                      <Input value={sysFields?.SB ?? ""} disabled />
+                      <Text strong type="" style={{ marginTop: 5 }}>SB#</Text>
+                      <Input style={{ border: "1px solid black" }} value={sysFields?.SB ?? ""} disabled />
                     </Col>
 
                     <Col span={8}>
-                      <Text type="secondary">GP#</Text>
-                      <Input value={sysFields?.GP ?? ""} disabled />
+                      <Text strong type="" style={{ marginTop: 5 }}>GP#</Text>
+                      <Input style={{ border: "1px solid black" }} value={sysFields?.GP ?? ""} disabled />
                     </Col>
                   </Row>
                 </Col>
 
                 {/* Chap */}
                 <Col xs={24} sm={3}>
-                  <Text type="secondary">Chap# (default 10)</Text>
-                  <Input style={{ marginTop: 4 }} value={chapterNo} disabled />
+                  <Text strong type="" style={{ marginTop: 5 }}>Chap# (default 10)</Text>
+                  <Input style={{ marginTop: 4, border: "1px solid black" }} value={chapterNo} disabled />
                 </Col>
               </Row>
             </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
             <div style={{ marginTop: 16 }}>
@@ -593,69 +577,59 @@ export default function ChapterForm() {
                 </Row>
               </div> */}
 
-            <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-            
-              <Button type="primary" onClick={handleSaveWindow1} disabled={window1Locked}>
-                Save the above
-              </Button>             
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-              <div style={{ marginTop: 12 }}>
-                <Text type="secondary">BT/CT Special Records</Text>
-                <Table
-                  size="small"
-                  pagination={false}
-                  style={{ marginTop: 8 }}
-                  dataSource={
-                    sysFields
-                      ? [
-                        {
-                          key: "bt",
-                          label: "BT (Book Title)",
-                          MRec: pad4(sysFields.bt.MRec),
-                          SRec: pad2(sysFields.bt.SRec),
-                          DSCode: sysFields.bt.DSCode,
-                        },
-                        {
-                          key: "ct",
-                          label: "CT (Chapter Title)",
-                          MRec: pad4(sysFields.ct.MRec),
-                          SRec: pad2(sysFields.ct.SRec),
-                          DSCode: sysFields.ct.DSCode,
-                        },
-                      ]
-                      : []
-                  }
-                  columns={[
-                    { title: "Item", dataIndex: "label" },
-                    { title: "MRec#", dataIndex: "MRec", width: 90 },
-                    { title: "SRec#", dataIndex: "SRec", width: 90 },
-                    { title: "DSCode", dataIndex: "DSCode", width: 90 },
-                  ]}
-                />
+              <div style={{ display: "flex", gap: 8, marginBottom: 30, marginTop: 12, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                <Button type="primary" onClick={handleSaveWindow1} disabled={window1Locked}>Save the above</Button>
               </div>
+
+              <hr style={{ border: "1px solid red" }} />
+
+              <Collapse ghost style={{ marginTop: 30 }}>
+                <Collapse.Panel header="BT/CT Special Records" key="1">
+                  <Table
+                    size="small"
+                    pagination={false}
+                    dataSource={
+                      sysFields
+                        ? [
+                          {
+                            key: "bt",
+                            label: "BT (Book Title)",
+                            MRec: pad4(sysFields.bt.MRec),
+                            SRec: pad2(sysFields.bt.SRec),
+                            DSCode: sysFields.bt.DSCode,
+                          },
+                          {
+                            key: "ct",
+                            label: "CT (Chapter Title)",
+                            MRec: pad4(sysFields.ct.MRec),
+                            SRec: pad2(sysFields.ct.SRec),
+                            DSCode: sysFields.ct.DSCode,
+                          },
+                        ]
+                        : []
+                    }
+                    columns={[
+                      { title: "Item", dataIndex: "label" },
+                      { title: "MRec#", dataIndex: "MRec", width: 90 },
+                      { title: "SRec#", dataIndex: "SRec", width: 90 },
+                      { title: "DSCode", dataIndex: "DSCode", width: 90 },
+                    ]}
+                  />
+                </Collapse.Panel>
+              </Collapse>
+
             </div>
           </Card>
         </Col>
 
-        <Col span={24} style={{ padding: 16 }}>
+        <Col span={24} style={{ padding: 20 }}>
           <Card
             className="print-card"
             title="Window 2 — Content Creation (DSCode + TipTap)"
             extra={<Tag color={window2Enabled ? "green" : "red"}>{window2Enabled ? "Enabled" : "Disabled"}</Tag>}
             style={{ borderRadius: 12, border: "4px double red" }}
           >
-            <Row gutter={12} style={{ marginBottom: 12 }}>
+            {/* <Row gutter={12} style={{ marginBottom: 12 }}>
               <Col xs={24} sm={12}>
                 <Text type="secondary">DSCode</Text>
                 <Select
@@ -676,19 +650,71 @@ export default function ChapterForm() {
                 <Text type="secondary">SRec#</Text>
                 <Input style={{ marginTop: 4 }} value={pad2(nextSRec)} disabled />
               </Col>
+            </Row> */}
+
+            <Row gutter={12} align="bottom" style={{ marginBottom: 12 }}>
+              {/* DSCode */}
+              <Col xs={24} sm={4} style={{ marginTop: 10 }}>
+                <Text strong type="" style={{ marginTop: 5 }}>DSCode</Text>
+                <Select
+                  style={{ width: "100%", marginTop: 4, borderRadius: 8, border: "1px solid black" }}
+                  options={DS_CODES}
+                  value={activeDSCode}
+                  onChange={setActiveDSCode}
+                  disabled={!window2Enabled}
+                />
+              </Col>
+
+              {/* MRec */}
+              <Col xs={12} sm={4}>
+                <Text strong type="" style={{ marginTop: 5 }}>MRec#</Text>
+                <Input style={{ marginTop: 4, border: "1px solid black" }} value={pad4(nextMRec)} disabled />
+              </Col>
+
+              {/* SRec */}
+              <Col xs={12} sm={4}>
+                <Text strong type="" style={{ marginTop: 5 }}>SRec#</Text>
+                <Input style={{ marginTop: 4, border: "1px solid black" }} value={pad2(nextSRec)} disabled />
+              </Col>
+
+              {/* System Assigned Fields Label + MB/SB/GP */}
+              <Col xs={24} sm={9}>
+
+
+                <Row gutter={8} style={{ marginTop: 4 }}>
+                  <Col span={8}>
+                    <Text strong type="" style={{ marginTop: 5 }}>MB#</Text>
+                    <Input style={{ border: "1px solid black" }} value={sysFields?.MB ?? ""} disabled />
+                  </Col>
+
+                  <Col span={8}>
+                    <Text strong type="" style={{ marginTop: 5 }}>SB#</Text>
+                    <Input style={{ border: "1px solid black" }} value={sysFields?.SB ?? ""} disabled />
+                  </Col>
+
+                  <Col span={8}>
+                    <Text strong type="" style={{ marginTop: 5 }}>GP#</Text>
+                    <Input style={{ border: "1px solid black" }} value={sysFields?.GP ?? ""} disabled />
+                  </Col>
+                </Row>
+              </Col>
+
+              {/* Chap */}
+              <Col xs={24} sm={3}>
+                <Text strong type="" style={{ marginTop: 5 }}>Chap# (default 10)</Text>
+                <Input style={{ marginTop: 4, border: "1px solid black" }} value={chapterNo} disabled />
+              </Col>
             </Row>
+
+            <Title type="secondary" style={{ fontSize: "30px", fontWeight: 500, color: "black", textAlign: "center", alignItems: "center", justifyContent: "center", border: "1px solid black", padding: "40px", marginTop: 15, borderRadius: 8 }}>Reserved for Editor</Title>
 
             <TipTapBox disabled={!window2Enabled} initialJson={activeJson} onChangeJson={setActiveJson} />
 
-            <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
-              <Button type="primary" onClick={handleSaveCreateNext} disabled={!window2Enabled}>
-                Save &amp; Create Next
-              </Button>
-
-              <Button onClick={() => setCdtOpen(true)} disabled={!selectedBook}>
-                Popup Current Chapter (CDT)
-              </Button>
+            <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "flex-end", alignItems: "center" }}>
+              <Button style={{ border: "1px solid black" }} type="primary" onClick={handleSaveCreateNext} disabled={!window2Enabled}>Save &amp; Create Next</Button>
+              <Button style={{ border: "1px solid black" }} onClick={() => setCdtOpen(true)} disabled={!selectedBook}>Popup Current Chapter (CDT)</Button>
             </div>
+
 
             <div style={{ marginTop: 12 }}>
               <Text type="secondary">Note: Reference UI. Dev guy will connect DB/API and final styling.</Text>
