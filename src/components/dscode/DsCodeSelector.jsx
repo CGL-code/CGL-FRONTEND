@@ -67,21 +67,41 @@ export default function DsCodeSelector() {
   };
 
   return (
-    <div style={{ maxWidth: 900 }}>
+    <div style={{ maxWidth: 900, padding: "20px" }}>
       <Title level={4}>DSCode Tagging – Part 1</Title>
 
       <Space direction="vertical" style={{ width: "100%" }}>
         <Select
+          bordered={false}
           placeholder="— Select Semantic Purpose —"
-          options={opts.semanticPurposes.map((x) => ({ value: x.id, label: x.label }))}
+          options={opts.semanticPurposes.map((x) => ({
+            value: x.id,
+            label: x.label,
+          }))}
+          style={{
+            width: "30%",
+            border: "1px solid black",
+            borderRadius: "8px",
+          }}
+          dropdownStyle={{ color: "black" }}
           onChange={onPurposeChange}
           value={semanticPurposeId}
           allowClear
         />
 
         <Select
+          bordered={false}
           placeholder="— Select Semantic —"
-          options={semanticOptions.map((x) => ({ value: x.id, label: x.label }))}
+          options={semanticOptions.map((x) => ({
+            value: x.id,
+            label: x.label,
+          }))}
+          style={{
+            width: "30%",
+            border: "1px solid black",
+            borderRadius: "8px",
+          }}
+          dropdownStyle={{ color: "black" }}
           onChange={onSemanticChange}
           value={semanticId}
           disabled={!semanticPurposeId}
@@ -89,8 +109,18 @@ export default function DsCodeSelector() {
         />
 
         <Select
+          bordered={false}
           placeholder="— Select DSCode —"
-          options={dscodeOptions.map((x) => ({ value: x.id, label: x.label }))}
+          options={dscodeOptions.map((x) => ({
+            value: x.id,
+            label: x.label,
+          }))}
+          style={{
+            width: "30%",
+            border: "1px solid black",
+            borderRadius: "8px",
+          }}
+          dropdownStyle={{ color: "black" }}
           onChange={setDscodeId}
           value={dscodeId}
           disabled={!semanticId}
@@ -98,10 +128,17 @@ export default function DsCodeSelector() {
         />
 
         <Input.TextArea
+          bordered={false}
           placeholder="Enter text to tag with DSCode"
           rows={4}
           value={text}
           onChange={(e) => setText(e.target.value)}
+          style={{
+            width: "100%",
+            border: "1px solid black",
+            borderRadius: "8px",
+            color: "black",
+          }}
         />
 
         <Button type="primary" onClick={onSave}>

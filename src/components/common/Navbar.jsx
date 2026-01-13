@@ -27,6 +27,10 @@ const Navbar = () => {
          {
             key: "2",
             label: <Link to="write">Book</Link>
+        },
+        {
+            key: "3",
+            label: <Link to="dscode-test">DS Code</Link>
         }
     ]
 
