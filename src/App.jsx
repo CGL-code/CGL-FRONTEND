@@ -7,6 +7,8 @@ import Navbar from "./components/common/Navbar";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import ChapterForm from "./components/chapter/ChapterForm.jsx";
+import DsCodeSelector from "./components/dscode/DsCodeSelector";
+
 
 // Lazy imports for all pages/components
 const Login = lazy(() => import("./components/auth/Login"));
@@ -35,6 +37,8 @@ export default function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/chapter" element={<ChapterForm />} />
             <Route path="/confirm-otp" element={<ConfirmOtp />} />
+            <Route path="/dscode-test" element={<DsCodeSelector />} />
+
 
             {/* Chapter UI */}
           {/*}  <Route path="/chapter" element={<ChapterForm />} />*/}

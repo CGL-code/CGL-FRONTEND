@@ -1,0 +1,22 @@
+Folder PATH listing for volume Recovery drive
+Volume serial number is 8E2B-5164
+D:.
+|   App.css
+|   App.jsx
+|   index.css
+|   main.jsx
+|   structure.txt
+|   
++---assets
+|       react.svg
+|       
+\---semanticCabinet
+    |   index.js
+    |   PROTOCOL_PACKAGE_4.md
+    |   SemanticCabinet.jsx
+    |   
+    \---config
+            dsCodes.js
+            mappings.js
+            semantics.js
+            

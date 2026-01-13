@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { Avatar, Dropdown, Menu } from "antd";
+
 import {
     LogoutOutlined,
     UserOutlined,
@@ -12,11 +13,22 @@ import {
     CustomerServiceOutlined,
 } from "@ant-design/icons";
 import DrawerComponent from "../../utils/DrawerComponent";
+import { Button } from "antd/es/radio";
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
     const navigate = useNavigate();
     const [openDrawer, setOpenDrawer] = useState(false);
+    const items = [
+        {
+            key: "1",
+            label: <Link to="chapter">Chpater</Link>
+        },
+         {
+            key: "2",
+            label: <Link to="write">Book</Link>
+        }
+    ]
 
     if (!user) return null;
 
@@ -62,6 +74,10 @@ const Navbar = () => {
                         <CustomerServiceOutlined /> <span>Contact</span>
                     </Link>
                 </div>
+
+                      <Dropdown menu={{items}}>
+                        <Button>Menu</Button>
+                      </Dropdown>
 
                 <Dropdown overlay={menu} placement="bottomRight">
                     <Avatar className="cursor-pointer bg-white border-1 text-black font-bold shadow-md" size={35}>

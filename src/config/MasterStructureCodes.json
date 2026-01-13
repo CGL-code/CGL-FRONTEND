@@ -1,0 +1,24 @@
+[
+  { "code": "BT", "label": "Book Title", "desc": "Auto from selected Book", "order": 10 },
+  { "code": "CT", "label": "Chapter Title", "desc": "Title of the chapter (mandatory)", "order": 20 },
+  { "code": "CI", "label": "Chapter Intro", "desc": "Short introduction to the chapter", "order": 30 },
+  { "code": "AT", "label": "Author Thought", "desc": "Author’s note / thought", "order": 40 },
+  { "code": "HD", "label": "Heading", "desc": "Section heading (recommended text)", "order": 50 },
+  { "code": "SB", "label": "Sub-Heading", "desc": "Sub-heading under a heading", "order": 60 },
+  { "code": "QO", "label": "Quote", "desc": "Quotation or highlighted saying", "order": 70 },
+  { "code": "OB", "label": "Observation", "desc": "Key observation / insight", "order": 80 },
+  { "code": "BG", "label": "Background", "desc": "Background context", "order": 90 },
+  { "code": "PR", "label": "Purpose", "desc": "Purpose / objective of this section", "order": 100 },
+
+  { "code": "TX", "label": "Main Text", "desc": "Main content / body text", "order": 110 },
+  { "code": "EX", "label": "Example", "desc": "Example to explain the concept", "order": 120 },
+  { "code": "NT", "label": "Note", "desc": "Important note / reminder", "order": 130 },
+  { "code": "TP", "label": "Tip", "desc": "Practical tip for the reader", "order": 140 },
+  { "code": "WR", "label": "Warning", "desc": "Caution / warning statement", "order": 150 },
+  { "code": "IL", "label": "Illustration", "desc": "Illustration reference (text placeholder)", "order": 160 },
+  { "code": "QA", "label": "Q & A", "desc": "Question and answer block", "order": 170 },
+  { "code": "CS", "label": "Case Study", "desc": "Case study / scenario", "order": 180 },
+  { "code": "SM", "label": "Summary", "desc": "Short summary of the section/chapter", "order": 190 },
+
+  { "code": "RK", "label": "Record Key", "desc": "System record tracking (auto)", "order": 200 }
+]

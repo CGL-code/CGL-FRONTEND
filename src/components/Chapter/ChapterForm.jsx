@@ -1,11 +1,30 @@
-/* The current active specimen for the modification _Now modified
- */
+/* The current active specimen for the modification _Now modified With DSCODE*/
 
-import React, { useEffect, useMemo, useState } from "react";
-import { Button, Card, Col, Input, Modal, Row, Select, Table, Tag, Typography, message, Collapse } from "antd";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Button,
+  Card,
+  Col,
+  Input,
+  Modal,
+  Row,
+  Select,
+  Table,
+  Tag,
+  Typography,
+  message,
+  Collapse,
+} from "antd";
+
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+
+import { semantics } from "../../semanticCabinet/config/semantics";
+import { dsCodes } from "../../semanticCabinet/config/dsCodes";
+import { semanticToDsCodes } from "../../semanticCabinet/config/mappings";
+
+import StructureCodePicker from "./StructureCodePicker";
 
 const { Title, Text } = Typography;
 
@@ -36,12 +55,68 @@ const demoBooks = [
   },
 ];
 
-const DS_CODES = [
-  { value: "BT", label: "BT — Book Title (system/locked after save)" },
-  { value: "CT", label: "CT — Chapter Title (user; locked after chapter finalisation)" },
-  { value: "X1", label: "X1 — Content Block 1" },
-  { value: "X2", label: "X2 — Content Block 2" },
-];
+/**
+ * DSCode Select (uses semanticCabinet dsCodes list)
+ * - value is a DSCode string (e.g. "BT", "CT", "X1", etc.)
+ */
+function DSCodeSelect({ value, onChange, disabled, options }) {
+  const safeOptions = (options || []).map((d) => ({
+    value: d.code,
+    label: `${d.code} — ${d.label || d.title || d.name || ""}`.trim(),
+    code: d.code,
+    title: d.label || d.title || d.name || "",
+    note: d.note || "",
+  }));
+
+  return (
+    <Select
+      style={{ width: "100%", marginTop: 4, borderRadius: 8, border: "1px solid black" }}
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      dropdownMatchSelectWidth={520}
+      options={safeOptions}
+      optionRender={(option) => {
+        const data = option.data;
+        return (
+          <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+            <div style={{ width: 64, fontFamily: "monospace", fontWeight: 700 }}>{data.code}</div>
+            <div style={{ lineHeight: 1.25 }}>
+              <div style={{ color: "rgba(0,0,0,0.88)" }}>{data.title || data.code}</div>
+              {data.note ? (
+                <div style={{ color: "rgba(0,0,0,0.55)", fontSize: 12 }}>{data.note}</div>
+              ) : null}
+            </div>
+          </div>
+        );
+      }}
+    />
+  );
+}
+
+function DSCodeReadonly({ value, options }) {
+  const opt = (options || []).find((o) => o.code === value);
+  const label = opt
+    ? `${opt.code} — ${opt.label || opt.title || opt.name || ""}`.trim()
+    : value || "—";
+
+  return (
+    <div
+      style={{
+        width: "100%",
+        marginTop: 4,
+        padding: "6px 10px",
+        borderRadius: 8,
+        border: "1px solid black",
+        color: "rgba(0,0,0,0.65)",
+        background: "#fafafa",
+        fontFamily: "monospace",
+      }}
+    >
+      {label}
+    </div>
+  );
+}
 
 /**
  * TipTap editor wrapper
@@ -89,16 +164,34 @@ function TipTapBox({ disabled, initialJson, onChangeJson }) {
 }
 
 export default function ChapterForm() {
+  // ✅ Picker state MUST be inside the component (React hook rule)
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [selectedCodeObj, setSelectedCodeObj] = useState(null);
+
   // Window 1 state
   const [bookModalOpen, setBookModalOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
 
   const [chapterTitle, setChapterTitle] = useState("");
-  const [chapterNo, setChapterNo] = useState(10); // default as per your document logic
+  const [chapterNo] = useState(10); // default as per your document logic
   const [chapterStatus, setChapterStatus] = useState("Draft"); // Draft -> In Progress -> Finalised
   const [window1Locked, setWindow1Locked] = useState(false);
-  const [showBtCt, setShowBtCt] = useState(false);
 
+  // Semantic filtering (Window 2 helper)
+  const [semanticId, setSemanticId] = useState("");
+  const [semanticDsCode, setSemanticDsCode] = useState("");
+
+  const allowedDsCodes = semanticToDsCodes[semanticId] || [];
+  const filteredDsCodes = dsCodes.filter((d) => allowedDsCodes.includes(d.code));
+
+  useEffect(() => {
+    setSemanticDsCode("");
+  }, [semanticId]);
+
+  // ✅ When user picks a filtered DSCode, sync it into the main DSCode control
+  useEffect(() => {
+    if (semanticDsCode) setActiveDSCode(semanticDsCode);
+  }, [semanticDsCode]);
 
   // System assigned fields (Window 1)
   const sysFields = useMemo(() => {
@@ -116,7 +209,8 @@ export default function ChapterForm() {
   }, [selectedBook, chapterNo]);
 
   // Window 2 state
-  const [window2Enabled, setWindow2Enabled] = useState(false);
+  const [window2Enabled, setWindow2Enabled] = useState(true);
+
   const [activeDSCode, setActiveDSCode] = useState("X1");
   const [activeJson, setActiveJson] = useState({ type: "doc", content: [{ type: "paragraph" }] });
 
@@ -230,7 +324,6 @@ export default function ChapterForm() {
     };
 
     setChapterDataRows((prev) => [BTrow, CTrow, ...prev]);
-
     message.success("Window 1 saved. Window 2 enabled (DSCode + TipTap).");
   }
 
@@ -280,62 +373,50 @@ export default function ChapterForm() {
   }
 
   return (
-    <div className="chapter-print-root" style={{ padding: 16, border: "6px double #144702", background: "#D9F2D0", margin: 10, borderRadius: 12, maxWidth: 1300, marginInline: "auto", }}>
-      {/* Print rules live INSIDE this component so you don’t have to edit other files */}
+    <div
+      className="chapter-print-root"
+      style={{
+        padding: 16,
+        border: "6px double #144702",
+        background: "#D9F2D0",
+        margin: 10,
+        borderRadius: 12,
+        maxWidth: 1300,
+        marginInline: "auto",
+      }}
+    >
       <style>{`
         @media print {
-          /* Make sure the full page prints (not a “scrollable area only”) */
-          html, body {
-            height: auto !important;
-            overflow: visible !important;
-          }
-
-          /* Hide modals during print (they can mess printing) */
-          .ant-modal-root {
-            display: none !important;
-          }
-
-          /* Remove shadows for clean printing */
-          .ant-card {
-            box-shadow: none !important;
-          }
-
-          /* IMPORTANT: allow long cards to break across pages */
-          .ant-card, .ant-card-body, .ant-row, .ant-col {
-            break-inside: auto !important;
-            page-break-inside: auto !important;
-          }
-
-          /* Give cards breathing room between pages */
-          .print-card {
-            margin-bottom: 16px !important;
-          }
-
-          /* TipTap area should show border nicely in print */
-          .cgl-editor-box {
-            border: 1px solid #999 !important;
-          }
+          html, body { height: auto !important; overflow: visible !important; }
+          .ant-modal-root { display: none !important; }
+          .ant-card { box-shadow: none !important; }
+          .ant-card, .ant-card-body, .ant-row, .ant-col { break-inside: auto !important; page-break-inside: auto !important; }
+          .print-card { margin-bottom: 16px !important; }
+          .cgl-editor-box { border: 1px solid #999 !important; }
         }
       `}</style>
 
-      {/* <Title level={3} style={{ marginTop: 0 }}>
-        Chapter UI (One Column) — Window 1 then Window 2
-      </Title>*/}
-
-      {/* ONE COLUMN LAYOUT: Window 1 then Window 2 */}
       <Row gutter={[16, 16]}>
+        {/* WINDOW 1 */}
         <Col span={24} style={{ padding: 20 }}>
           <Card
             className="print-card"
-            // title="Window 1 — Identity & Control"
             extra={<Tag color={window1Locked ? "green" : "blue"}>{window1Locked ? "Locked" : "Editable"}</Tag>}
             style={{ borderRadius: 12, border: "4px double red" }}
           >
-            <Title level={3} style={{ marginTop: -42, textAlign: "center", color: "#a82340ef", fontSize: "30px" }}>
+            <Title
+              level={3}
+              style={{
+                marginTop: -42,
+                textAlign: "center",
+                color: "#a82340ef",
+                fontSize: "30px",
+              }}
+            >
               * User Interface For Chapter Creation *
-            </Title >
+            </Title>
 
-            <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap", justifyContent: "flex-end", }}>
+            <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
               <Button onClick={() => setCdtOpen(true)} disabled={!selectedBook} style={{ border: "1px solid black" }}>
                 Popup Chapter Data Table
               </Button>
@@ -353,106 +434,99 @@ export default function ChapterForm() {
             <Row gutter={12}>
               <Col xs={24} sm={12}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <Text strong type="">Status : </Text>
-
+                  <Text strong>Status :</Text>
                   <Tag
                     color={
                       chapterStatus === "In Progress"
                         ? "orange"
                         : chapterStatus === "Finalised"
-                          ? "green"
-                          : "blue"
+                        ? "green"
+                        : "blue"
                     }
                   >
                     {chapterStatus}
                   </Tag>
                 </div>
               </Col>
-
-
-              {/* <Col xs={24} sm={12}>
-                <Text type="secondary">Chap# (default 10)</Text>
-                <div style={{ marginTop: 4 }}>
-                  <Input value={chapterNo} disabled />
-                </div>
-              </Col> */}
             </Row>
 
             <div>
-              <Title type="secondary" style={{ fontSize: "20px", fontWeight: 500, color: "black", textAlign: "center", alignItems: "center", justifyContent: "center", border: "1px solid black", padding: "10px", marginTop: 15, borderRadius: 8 }}>System Assigned Fields (Auto)</Title>
-
+              <Title
+                type="secondary"
+                style={{
+                  fontSize: "20px",
+                  fontWeight: 500,
+                  color: "black",
+                  textAlign: "center",
+                  border: "1px solid black",
+                  padding: "10px",
+                  marginTop: 15,
+                  borderRadius: 8,
+                }}
+              >
+                System Assigned Fields (Auto)
+              </Title>
 
               <div style={{ marginTop: 12 }}>
-                <Text strong type="">Book Title (from Book List)</Text>
-                <Input value={selectedBook?.title || ""} placeholder="Select a book…" disabled style={{ border: "1px solid black", marginTop: 5 }} />
+                <Text strong>Book Title (from Book List)</Text>
+                <Input
+                  value={selectedBook?.title || ""}
+                  placeholder="Select a book…"
+                  disabled
+                  style={{ border: "1px solid black", marginTop: 5 }}
+                />
               </div>
 
-              <Row gutter={12} align="bottom">
-                {/* DSCode */}
-                <Col xs={24} sm={4} style={{ marginTop: 10 }}>
-                  <Text strong type="" style={{ marginTop: 5 }}>DSCode</Text>
-                  <Select
-                    style={{ width: "100%", marginTop: 4, borderRadius: 8, border: "1px solid black" }}
-                    options={DS_CODES}
-                    value={activeDSCode}
-                    onChange={setActiveDSCode}
-                    disabled={!window2Enabled}
-                  />
+              <Row gutter={12} align="bottom" style={{ marginTop: 10 }}>
+                <Col xs={24} sm={4}>
+                  <Text strong>DSCode</Text>
+                  <DSCodeReadonly value={activeDSCode} options={dsCodes} />
                 </Col>
 
-                {/* MRec */}
                 <Col xs={12} sm={4}>
-                  <Text strong type="" style={{ marginTop: 5 }}>MRec#</Text>
+                  <Text strong>MRec#</Text>
                   <Input style={{ marginTop: 4, border: "1px solid black" }} value={pad4(nextMRec)} disabled />
                 </Col>
 
-                {/* SRec */}
                 <Col xs={12} sm={4}>
-                  <Text strong type="" style={{ marginTop: 5 }}>SRec#</Text>
+                  <Text strong>SRec#</Text>
                   <Input style={{ marginTop: 4, border: "1px solid black" }} value={pad2(nextSRec)} disabled />
                 </Col>
 
-                {/* System Assigned Fields Label + MB/SB/GP */}
                 <Col xs={24} sm={9}>
-
-
                   <Row gutter={8} style={{ marginTop: 4 }}>
                     <Col span={8}>
-                      <Text strong type="" style={{ marginTop: 5 }}>MB#</Text>
+                      <Text strong>MB#</Text>
                       <Input style={{ border: "1px solid black" }} value={sysFields?.MB ?? ""} disabled />
                     </Col>
-
                     <Col span={8}>
-                      <Text strong type="" style={{ marginTop: 5 }}>SB#</Text>
+                      <Text strong>SB#</Text>
                       <Input style={{ border: "1px solid black" }} value={sysFields?.SB ?? ""} disabled />
                     </Col>
-
                     <Col span={8}>
-                      <Text strong type="" style={{ marginTop: 5 }}>GP#</Text>
+                      <Text strong>GP#</Text>
                       <Input style={{ border: "1px solid black" }} value={sysFields?.GP ?? ""} disabled />
                     </Col>
                   </Row>
                 </Col>
 
-                {/* Chap */}
                 <Col xs={24} sm={3}>
-                  <Text strong type="" style={{ marginTop: 5 }}>Chap# (default 10)</Text>
+                  <Text strong>Chap# (default 10)</Text>
                   <Input style={{ marginTop: 4, border: "1px solid black" }} value={chapterNo} disabled />
                 </Col>
               </Row>
             </div>
 
-
-
-            <div style={{ display: "flex", gap: 8, marginBottom: "30px", marginTop: 12, flexWrap: "wrap", justifyContent: "flex-end" }}>
-              <Button type="primary" onClick={handleSaveWindow1} disabled={window1Locked}>Save the above</Button>
+            <div style={{ display: "flex", gap: 8, marginBottom: 30, marginTop: 12, flexWrap: "wrap", justifyContent: "flex-end" }}>
+              <Button type="primary" onClick={handleSaveWindow1} disabled={window1Locked}>
+                Save the above
+              </Button>
             </div>
 
             <hr style={{ border: "1px solid red" }} />
 
-
-            <div style={{ marginTop: "30px" }}>
-              <Text strong type="">Chapter Title (User must enter)</Text>
+            <div style={{ marginTop: 30 }}>
+              <Text strong>Chapter Title (User must enter)</Text>
               <Input
                 value={chapterTitle}
                 placeholder="Enter Chapter Title"
@@ -462,166 +536,32 @@ export default function ChapterForm() {
               />
             </div>
 
-            <div>
-
-              <Row gutter={12} align="bottom">
-                {/* DSCode */}
-                <Col xs={24} sm={4} style={{ marginTop: 10 }}>
-                  <Text strong type="" style={{ marginTop: 5 }}>DSCode</Text>
-                  <Select
-                    style={{ width: "100%", marginTop: 4, borderRadius: 8, border: "1px solid black" }}
-                    options={DS_CODES}
-                    value={activeDSCode}
-                    onChange={setActiveDSCode}
-                    disabled={!window2Enabled}
-                  />
-                </Col>
-
-                {/* MRec */}
-                <Col xs={12} sm={4}>
-                  <Text strong type="" style={{ marginTop: 5 }}>MRec#</Text>
-                  <Input style={{ marginTop: 4, border: "1px solid black" }} value={pad4(nextMRec)} disabled />
-                </Col>
-
-                {/* SRec */}
-                <Col xs={12} sm={4}>
-                  <Text strong type="" style={{ marginTop: 5 }}>SRec#</Text>
-                  <Input style={{ marginTop: 4, border: "1px solid black" }} value={pad2(nextSRec)} disabled />
-                </Col>
-
-                {/* System Assigned Fields Label + MB/SB/GP */}
-                <Col xs={24} sm={9}>
-
-
-                  <Row gutter={8} style={{ marginTop: 4 }}>
-                    <Col span={8}>
-                      <Text strong type="" style={{ marginTop: 5 }}>MB#</Text>
-                      <Input style={{ border: "1px solid black" }} value={sysFields?.MB ?? ""} disabled />
-                    </Col>
-
-                    <Col span={8}>
-                      <Text strong type="" style={{ marginTop: 5 }}>SB#</Text>
-                      <Input style={{ border: "1px solid black" }} value={sysFields?.SB ?? ""} disabled />
-                    </Col>
-
-                    <Col span={8}>
-                      <Text strong type="" style={{ marginTop: 5 }}>GP#</Text>
-                      <Input style={{ border: "1px solid black" }} value={sysFields?.GP ?? ""} disabled />
-                    </Col>
-                  </Row>
-                </Col>
-
-                {/* Chap */}
-                <Col xs={24} sm={3}>
-                  <Text strong type="" style={{ marginTop: 5 }}>Chap# (default 10)</Text>
-                  <Input style={{ marginTop: 4, border: "1px solid black" }} value={chapterNo} disabled />
-                </Col>
-              </Row>
-            </div>
-
-
-            <div style={{ marginTop: 16 }}>
-              {/* <div style={{ marginTop: 16 }}>
-                <Row gutter={12} align="bottom">
-                 
-                  <Col xs={24} sm={4}>
-                    <Text type="secondary">DSCode</Text>
-                    <Select
-                      style={{ width: "100%", marginTop: 4 }}
-                      options={DS_CODES}
-                      value={activeDSCode}
-                      onChange={setActiveDSCode}
-                      disabled={!window2Enabled}
-                    />
-                  </Col>
-
-                  
-                  <Col xs={12} sm={4}>
-                    <Text type="secondary">MRec#</Text>
-                    <Input style={{ marginTop: 4 }} value={pad4(nextMRec)} disabled />
-                  </Col>
-
-                  
-                  <Col xs={12} sm={4}>
-                    <Text type="secondary">SRec#</Text>
-                    <Input style={{ marginTop: 4 }} value={pad2(nextSRec)} disabled />
-                  </Col>
-
-                  
-                  <Col xs={24} sm={9}>
-                    <Text type="secondary">System Assigned Fields (Auto)</Text>
-
-                    <Row gutter={8} style={{ marginTop: 4 }}>
-                      <Col span={8}>
-                        <Text type="secondary">MB#</Text>
-                        <Input value={sysFields?.MB ?? ""} disabled />
-                      </Col>
-
-                      <Col span={8}>
-                        <Text type="secondary">SB#</Text>
-                        <Input value={sysFields?.SB ?? ""} disabled />
-                      </Col>
-
-                      <Col span={8}>
-                        <Text type="secondary">GP#</Text>
-                        <Input value={sysFields?.GP ?? ""} disabled />
-                      </Col>
-                    </Row>
-                  </Col>
-
-                  
-                  <Col xs={24} sm={3}>
-                    <Text type="secondary">Chap# (default 10)</Text>
-                    <Input style={{ marginTop: 4 }} value={chapterNo} disabled />
-                  </Col>
-                </Row>
-              </div> */}
-
-              <div style={{ display: "flex", gap: 8, marginBottom: 30, marginTop: 12, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                <Button type="primary" onClick={handleSaveWindow1} disabled={window1Locked}>Save the above</Button>
-              </div>
-
-              <hr style={{ border: "1px solid red" }} />
-
-              <Collapse ghost style={{ marginTop: 30 }}>
-                <Collapse.Panel header="BT/CT Special Records" key="1">
-                  <Table
-                    size="small"
-                    pagination={false}
-                    dataSource={
-                      sysFields
-                        ? [
-                          {
-                            key: "bt",
-                            label: "BT (Book Title)",
-                            MRec: pad4(sysFields.bt.MRec),
-                            SRec: pad2(sysFields.bt.SRec),
-                            DSCode: sysFields.bt.DSCode,
-                          },
-                          {
-                            key: "ct",
-                            label: "CT (Chapter Title)",
-                            MRec: pad4(sysFields.ct.MRec),
-                            SRec: pad2(sysFields.ct.SRec),
-                            DSCode: sysFields.ct.DSCode,
-                          },
+            <Collapse ghost style={{ marginTop: 30 }}>
+              <Collapse.Panel header="BT/CT Special Records" key="1">
+                <Table
+                  size="small"
+                  pagination={false}
+                  dataSource={
+                    sysFields
+                      ? [
+                          { key: "bt", label: "BT (Book Title)", MRec: pad4(sysFields.bt.MRec), SRec: pad2(sysFields.bt.SRec), DSCode: sysFields.bt.DSCode },
+                          { key: "ct", label: "CT (Chapter Title)", MRec: pad4(sysFields.ct.MRec), SRec: pad2(sysFields.ct.SRec), DSCode: sysFields.ct.DSCode },
                         ]
-                        : []
-                    }
-                    columns={[
-                      { title: "Item", dataIndex: "label" },
-                      { title: "MRec#", dataIndex: "MRec", width: 90 },
-                      { title: "SRec#", dataIndex: "SRec", width: 90 },
-                      { title: "DSCode", dataIndex: "DSCode", width: 90 },
-                    ]}
-                  />
-                </Collapse.Panel>
-              </Collapse>
-
-            </div>
+                      : []
+                  }
+                  columns={[
+                    { title: "Item", dataIndex: "label" },
+                    { title: "MRec#", dataIndex: "MRec", width: 90 },
+                    { title: "SRec#", dataIndex: "SRec", width: 90 },
+                    { title: "DSCode", dataIndex: "DSCode", width: 90 },
+                  ]}
+                />
+              </Collapse.Panel>
+            </Collapse>
           </Card>
         </Col>
 
+        {/* WINDOW 2 */}
         <Col span={24} style={{ padding: 20 }}>
           <Card
             className="print-card"
@@ -629,92 +569,137 @@ export default function ChapterForm() {
             extra={<Tag color={window2Enabled ? "green" : "red"}>{window2Enabled ? "Enabled" : "Disabled"}</Tag>}
             style={{ borderRadius: 12, border: "4px double red" }}
           >
-            {/* <Row gutter={12} style={{ marginBottom: 12 }}>
-              <Col xs={24} sm={12}>
-                <Text type="secondary">DSCode</Text>
-                <Select
-                  style={{ width: "100%", marginTop: 4 }}
-                  options={DS_CODES}
-                  value={activeDSCode}
-                  onChange={setActiveDSCode}
-                  disabled={!window2Enabled}
-                />
-              </Col>
+            {/* ✅ Missing Button restored here */}
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+              <Button
+                style={{ border: "1px solid black" }}
+                onClick={() => setPickerOpen(true)}
+                disabled={!window2Enabled}
+              >
+                Popup Structure Code Picker
+              </Button>
 
-              <Col xs={12} sm={6}>
-                <Text type="secondary">MRec#</Text>
-                <Input style={{ marginTop: 4 }} value={pad4(nextMRec)} disabled />
-              </Col>
+              {selectedCodeObj?.code ? (
+                <Tag color="blue" style={{ fontFamily: "monospace" }}>
+                  Selected: {selectedCodeObj.code}
+                </Tag>
+              ) : null}
+            </div>
 
-              <Col xs={12} sm={6}>
-                <Text type="secondary">SRec#</Text>
-                <Input style={{ marginTop: 4 }} value={pad2(nextSRec)} disabled />
-              </Col>
-            </Row> */}
+            <div style={{ marginTop: 16, padding: 12, border: "1px solid #e5e7eb", borderRadius: 10 }}>
+              <div style={{ fontWeight: 700, marginBottom: 10 }}>Semantic Purpose (New)</div>
 
-            <Row gutter={12} align="bottom" style={{ marginBottom: 12 }}>
-              {/* DSCode */}
+              <label style={{ display: "block", marginBottom: 6 }}>Semantic</label>
+              <select
+                value={semanticId}
+                onChange={(e) => setSemanticId(e.target.value)}
+                style={{ width: "100%", padding: 10, borderRadius: 8, border: "1px solid #d1d5db" }}
+              >
+                <option value="">— Select Semantic —</option>
+                {semantics.map((s) => (
+                  <option key={s.semanticId} value={s.semanticId}>
+                    {s.semanticId} | {s.title}
+                  </option>
+                ))}
+              </select>
+
+              <div style={{ marginTop: 10 }}>
+                <label style={{ display: "block", marginBottom: 6 }}>DSCode (filtered)</label>
+                <select
+                  value={semanticDsCode}
+                  onChange={(e) => setSemanticDsCode(e.target.value)}
+                  disabled={!semanticId}
+                  style={{ width: "100%", padding: 10, borderRadius: 8, border: "1px solid #d1d5db" }}
+                >
+                  <option value="">— Select DSCode —</option>
+                  {filteredDsCodes.map((d) => (
+                    <option key={d.code} value={d.code}>
+                      {d.code} | {d.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <Row gutter={12} align="bottom" style={{ marginBottom: 12, marginTop: 12 }}>
               <Col xs={24} sm={4} style={{ marginTop: 10 }}>
-                <Text strong type="" style={{ marginTop: 5 }}>DSCode</Text>
-                <Select
-                  style={{ width: "100%", marginTop: 4, borderRadius: 8, border: "1px solid black" }}
-                  options={DS_CODES}
+                <Text strong>DSCode</Text>
+                <DSCodeSelect
                   value={activeDSCode}
                   onChange={setActiveDSCode}
                   disabled={!window2Enabled}
+                  options={dsCodes}
                 />
               </Col>
 
-              {/* MRec */}
               <Col xs={12} sm={4}>
-                <Text strong type="" style={{ marginTop: 5 }}>MRec#</Text>
+                <Text strong>MRec#</Text>
                 <Input style={{ marginTop: 4, border: "1px solid black" }} value={pad4(nextMRec)} disabled />
               </Col>
 
-              {/* SRec */}
               <Col xs={12} sm={4}>
-                <Text strong type="" style={{ marginTop: 5 }}>SRec#</Text>
+                <Text strong>SRec#</Text>
                 <Input style={{ marginTop: 4, border: "1px solid black" }} value={pad2(nextSRec)} disabled />
               </Col>
 
-              {/* System Assigned Fields Label + MB/SB/GP */}
               <Col xs={24} sm={9}>
-
-
                 <Row gutter={8} style={{ marginTop: 4 }}>
                   <Col span={8}>
-                    <Text strong type="" style={{ marginTop: 5 }}>MB#</Text>
+                    <Text strong>MB#</Text>
                     <Input style={{ border: "1px solid black" }} value={sysFields?.MB ?? ""} disabled />
                   </Col>
-
                   <Col span={8}>
-                    <Text strong type="" style={{ marginTop: 5 }}>SB#</Text>
+                    <Text strong>SB#</Text>
                     <Input style={{ border: "1px solid black" }} value={sysFields?.SB ?? ""} disabled />
                   </Col>
-
                   <Col span={8}>
-                    <Text strong type="" style={{ marginTop: 5 }}>GP#</Text>
+                    <Text strong>GP#</Text>
                     <Input style={{ border: "1px solid black" }} value={sysFields?.GP ?? ""} disabled />
                   </Col>
                 </Row>
               </Col>
 
-              {/* Chap */}
               <Col xs={24} sm={3}>
-                <Text strong type="" style={{ marginTop: 5 }}>Chap# (default 10)</Text>
+                <Text strong>Chap# (default 10)</Text>
                 <Input style={{ marginTop: 4, border: "1px solid black" }} value={chapterNo} disabled />
               </Col>
             </Row>
 
-            <Title type="secondary" style={{ fontSize: "30px", fontWeight: 500, color: "black", textAlign: "center", alignItems: "center", justifyContent: "center", border: "1px solid black", padding: "40px", marginTop: 15, borderRadius: 8 }}>Reserved for Editor</Title>
+            <Title
+              type="secondary"
+              style={{
+                fontSize: "30px",
+                fontWeight: 500,
+                color: "black",
+                textAlign: "center",
+                border: "1px solid black",
+                padding: "40px",
+                marginTop: 15,
+                borderRadius: 8,
+              }}
+            >
+              Reserved for Editor
+            </Title>
 
             <TipTapBox disabled={!window2Enabled} initialJson={activeJson} onChangeJson={setActiveJson} />
 
             <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "flex-end", alignItems: "center" }}>
-              <Button style={{ border: "1px solid black" }} type="primary" onClick={handleSaveCreateNext} disabled={!window2Enabled}>Save &amp; Create Next</Button>
-              <Button style={{ border: "1px solid black" }} onClick={() => setCdtOpen(true)} disabled={!selectedBook}>Popup Current Chapter (CDT)</Button>
+              <Button
+                style={{ border: "1px solid black" }}
+                type="primary"
+                onClick={handleSaveCreateNext}
+                disabled={!window2Enabled}
+              >
+                Save &amp; Create Next
+              </Button>
+              <Button
+                style={{ border: "1px solid black" }}
+                onClick={() => setCdtOpen(true)}
+                disabled={!selectedBook}
+              >
+                Popup Current Chapter (CDT)
+              </Button>
             </div>
-
 
             <div style={{ marginTop: 12 }}>
               <Text type="secondary">Note: Reference UI. Dev guy will connect DB/API and final styling.</Text>
@@ -748,6 +733,18 @@ export default function ChapterForm() {
       >
         <Table rowKey="key" columns={chapterDataColumns} dataSource={chapterDataRows} pagination={{ pageSize: 5 }} />
       </Modal>
+
+      {/* ✅ StructureCodePicker (wired + reachable now) */}
+      <StructureCodePicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        value={activeDSCode}
+        onSelect={(obj) => {
+          setSelectedCodeObj(obj);
+          setActiveDSCode(obj.code);
+          message.success(`Selected ${obj.code}`);
+        }}
+      />
     </div>
   );
 }
