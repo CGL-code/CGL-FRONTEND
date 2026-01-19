@@ -169,15 +169,6 @@ export default function BookForm() {
     { title: "Title", dataIndex: "title" },
     { title: "Type", dataIndex: "typeOfEntry" },
     { title: "Group No", dataIndex: "bookGroupNo" },
-
-    { title: "Section", dataIndex: "Section" },
-
-
-
-
-
-
-
     {
       title: "Introduction",
       dataIndex: "introParas",
@@ -219,7 +210,7 @@ export default function BookForm() {
           <Title level={5} style={{ textAlign: "center", color: "#ae1a1a" }}>
             PART 1 – TYPE OF BOOK ENTRY
           </Title>
-          <Text style={{ textAlign: "center", color: "#ae1a1acb", display: "block", marginBottom: 10 }}>Select the type of book entry.</Text>
+          <Text style={{ textAlign: "center", display: "block", marginBottom: 10 }}>Select the type of book entry.</Text>
           <div style={{ display: "flex", justifyContent: "center", gap: 120 }}>
             <label>
               <input
@@ -250,11 +241,8 @@ export default function BookForm() {
               PART 2 – DELIBERATE INSERT OF A NEW BOOK
             </Title>
 
-
-
-
-            <Row gutter={10}>
-                 <Col md={6}>
+            <Row gutter={16}>
+              <Col md={8}>
                 <Form.Item
                   label={
                     <>
@@ -270,7 +258,7 @@ export default function BookForm() {
                 </Form.Item>
               </Col>
 
-              <Col md={6}>
+              <Col md={8}>
                 <Form.Item
                   label={
                     <>
@@ -285,145 +273,11 @@ export default function BookForm() {
                   <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
               </Col>
-
-
-
-
-              <Col md={5}>
-                <Form.Item
-                  label={
-                    <>
-                      <Text strong>04a – Book Gp No</Text>
-                      <br />
-                       <Text type="secondary">(??)</Text>
-                    </>
-                  }
-                  name="refSBookNo"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
-                </Form.Item>
-              </Col>
-
-
-              <Col md={5}>
-                <Form.Item
-                  label={
-                    <>
-                      <Text strong>05a –  Section</Text>
-                      <br />
-                      <Text type="secondary">(Book Belongs)</Text>
-                    </>
-                  }
-                  name="refSBookNo"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
-                </Form.Item>
-              </Col>
             </Row>
-
-
-
 
             <Form.Item label={<Text strong>05 – Existing Book Title</Text>} name="existingBookTitle">
-              <Input disabled style={{ border: "2px solid red" }} />
+              <Input disabled style={{ border: "1px solid black" }} />
             </Form.Item>
-
-
-
-
-
-
-            <Row gutter={16}>
-              <Col md={6}>
-                <Form.Item
-                  label={
-                    <>
-                      <Text strong>03a – M. Book No</Text>
-                      <br />
-                      <Text type="secondary">(Newly Insert Book)</Text>
-                    </>
-                  }
-                  name="refMBookNo"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
-                </Form.Item>
-              </Col>
-
-              <Col md={6}>
-                <Form.Item
-                  label={
-                    <>
-                      <Text strong>04a – S. Book No</Text>
-                      <br />
-                       <Text type="secondary">(Newly Insert Book)</Text>
-                    </>
-                  }
-                  name="refSBookNo"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
-                </Form.Item>
-              </Col>
-
-
-
-
-              <Col md={5}>
-                <Form.Item
-                  label={
-                    <>
-                      <Text strong>04a – Book Gp No</Text>
-                      <br />
-                        <Text type="secondary">(Book Belongs)</Text>
-                    </>
-                  }
-                  name="refSBookNo"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
-                </Form.Item>
-              </Col>
-
-
-              <Col md={5}>
-                <Form.Item
-                  label={
-                    <>
-                      <Text strong>05a –  Section</Text>
-                      <br />
-                      <Text type="secondary">(Book Belongs)</Text>
-                    </>
-                  }
-                  name="refSBookNo"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
-                </Form.Item>
-              </Col>
-
-
-
-
-
-
-
-
-
-            </Row>
-
-
-
-
-
-
-
-
-
-
-
 
             <Form.Item
               label={<Text strong>05 – New Book Title</Text>}
@@ -441,34 +295,6 @@ export default function BookForm() {
               <Input.TextArea rows={3} style={{ border: "1px solid black" }}
                 placeholder="Short explanation (06) – for future reference / audit." />
             </Form.Item>
-
-
-
-
-
-          <Form.Item
-            name="introParas"
-            label={<Text strong>11 – Brief Introduction of the Book</Text>}
-            rules={[{ required: true }]}
-          >
-            <Input.TextArea rows={4} style={{ border: "1px solid black" }} />
-          </Form.Item>
-
-          <Paragraph type="secondary" style={{ marginTop: 4 }}>
-            12 – (Future option) You may show a live preview of “Current Book
-            Under Development” here, using fields 07–11.
-          </Paragraph>
-
-
-
-
-
-
-
-
-
-
-
 
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
               <Button >Create Authors Note</Button>
@@ -512,43 +338,29 @@ export default function BookForm() {
               </Form.Item>
             </Col>
 
-            <Col md={5}>
+            <Col md={6}>
               <Form.Item name="bookGroupNo" label={<Text strong>09 – Book Group No (default 00)</Text>}>
                 <InputNumber style={{ width: "100%", border: "1px solid black" }} />
               </Form.Item>
             </Col>
-
-            <Col md={5}>
-              <Form.Item name="bookGroupNo" label={<Text strong>09a – Book Group No (default 00)</Text>}>
-                <InputNumber style={{ width: "100%", border: "1px solid black" }} />
-              </Form.Item>
-            </Col>
-
-
-
           </Row>
 
           <Form.Item name="bookTitle" label={<Text strong>10 – Book Title</Text>} rules={[{ required: true }]}>
             <Input style={{ border: "1px solid black" }} />
           </Form.Item>
 
-
-
           <Form.Item
             name="introParas"
             label={<Text strong>11 – Brief Introduction of the Book</Text>}
             rules={[{ required: true }]}
           >
-            <Input.TextArea rows={4} style={{ border: "1.25px solid black" }} />
+            <Input.TextArea rows={4} style={{ border: "1px solid black" }} />
           </Form.Item>
 
           <Paragraph type="secondary" style={{ marginTop: 4 }}>
             12 – (Future option) You may show a live preview of “Current Book
             Under Development” here, using fields 07–11.
           </Paragraph>
-
-
-
 
           <Divider style={{ margin: "16px 0 12px" }} />
 
