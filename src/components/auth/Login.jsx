@@ -1,4 +1,5 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { Input, Button } from "antd";
 import { Link } from "react-router-dom";
@@ -6,7 +7,19 @@ import loginImage from "../../assets/login_image.png";
 import logo from "../../assets/CGL.png";
 
 const Login = () => {
-  const { login } = useContext(AuthContext);
+  const { login, user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      const redirectPath =
+        user.userType === "ADMIN" ? "/admin" : "/dashboard";
+
+      navigate(redirectPath, { replace: true });
+    }
+  }, [user, navigate]);
+
+
   const [credentials, setCredentials] = useState({ email: "", password: "" });
 
   const handleChange = (e) => {

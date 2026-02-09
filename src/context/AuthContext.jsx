@@ -11,9 +11,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // 🌐 Load user profile if token exists
+  // 🌐 Load user profile if token exists (session-based)
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
 
     if (!token) {
       setLoading(false);
@@ -25,37 +25,40 @@ export const AuthProvider = ({ children }) => {
         setUser(res.data.user);
       })
       .catch(() => {
-        logout();
+        sessionStorage.removeItem("token");
+        setUser(null);
       })
       .finally(() => setLoading(false));
   }, []);
 
-  // 🔐 Login function using service API
+  // 🔐 Login
   const login = async (credentials) => {
     try {
       const res = await loginUser(credentials);
 
-      localStorage.setItem("token", res.data.token);
+      sessionStorage.setItem("token", res.data.token);
       setUser(res.data.user);
 
       toast.success("Login Successful");
 
-      const redirectPath = res.data.user.userType === "ADMIN" ? "/admin" : "/dashboard";
-      navigate(redirectPath);
+      const redirectPath =
+        res.data.user.userType === "ADMIN" ? "/admin" : "/dashboard";
+
+      navigate(redirectPath, { replace: true });
     } catch (error) {
       toast.error(error.response?.data?.message || "Login Failed");
     }
   };
 
-  // 🚪 Logout function
+  // 🚪 Logout
   const logout = () => {
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
     setUser(null);
     toast.success("Logged Out");
-    navigate("/login");
+    navigate("/login", { replace: true });
   };
 
-  // ⏳ Global loader during initial auth check
+  // ⏳ Global loader during auth check
   if (loading) return <Loader />;
 
   return (
