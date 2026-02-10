@@ -26,9 +26,7 @@ const { Title, Text, Paragraph } = Typography;
 export default function BookForm() {
   const [form] = Form.useForm();
 
-  // const [entryMode, setEntryMode] = useState("regular");
-  const [entryMode, setEntryMode] = useState(null);
-
+  const [entryMode, setEntryMode] = useState("regular");
   const [savingInsertPlan, setSavingInsertPlan] = useState(false);
   const [savingBook, setSavingBook] = useState(false);
 
@@ -41,23 +39,6 @@ export default function BookForm() {
   /* ===============================
      REGULAR MODE AUTO NUMBER
      =============================== */
-  // useEffect(() => {
-  //   if (entryMode === "regular") {
-  //     getNextRegularApi().then((res) => {
-  //       form.setFieldsValue({
-  //         mBookNo: res.data.mBookNo,
-  //         sBookNo: res.data.sBookNo,
-  //       });
-  //     });
-  //   } else {
-  //     // Clear numbers in insert mode
-  //     form.setFieldsValue({
-  //       mBookNo: undefined,
-  //       sBookNo: undefined,
-  //     });
-  //   }
-  // }, [entryMode, form]);
-
   useEffect(() => {
     if (entryMode === "regular") {
       getNextRegularApi().then((res) => {
@@ -66,16 +47,14 @@ export default function BookForm() {
           sBookNo: res.data.sBookNo,
         });
       });
-    }
-
-    if (entryMode === "insert") {
+    } else {
+      // Clear numbers in insert mode
       form.setFieldsValue({
         mBookNo: undefined,
         sBookNo: undefined,
       });
     }
   }, [entryMode, form]);
-
 
 
   /* ===============================
@@ -241,68 +220,34 @@ export default function BookForm() {
             PART 1 – TYPE OF BOOK ENTRY
           </Title>
           <Text style={{ textAlign: "center", color: "#ae1a1acb", display: "block", marginBottom: 10 }}>Select the type of book entry.</Text>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 16,
-            }}
-          >
-            {/* CENTER – RADIO OPTIONS */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                gap: 120,
-                flex: 1,
-              }}
-            >
-              <label>
-                <input
-                  type="radio"
-                  value="regular"
-                  checked={entryMode === "regular"}
-                  onChange={handleEntryModeChange}
-                />{" "}
-                <Text strong>
-                  01 – Create Regular series (work only in Part 3.)
-                </Text>
-              </label>
+          <div style={{ display: "flex", justifyContent: "center", gap: 120 }}>
+            <label>
+              <input
+                type="radio"
+                value="regular"
+                checked={entryMode === "regular"}
+                onChange={handleEntryModeChange}
+              />{" "}
+              <Text strong>01 – Create Regular series (work only in Part 3.) .</Text>
+            </label>
 
-              <label>
-                <input
-                  type="radio"
-                  value="insert"
-                  checked={entryMode === "insert"}
-                  onChange={handleEntryModeChange}
-                />{" "}
-                <Text strong>
-                  02 – Deliberate Insert – New Book (work in Part 2 &amp; 3.)
-                </Text>
-              </label>
-            </div>
-
-            {/* RIGHT – VIEW BOOKS BUTTON */}
-            <Button
-              onClick={handleViewBooks}
-              style={{
-                border: "2px solid red",
-                padding: "8px 22px",
-                fontWeight: 600,
-                height: "auto",
-              }}
-            >
-              View All Books
-            </Button>
+            <label>
+              <input
+                type="radio"
+                value="insert"
+                checked={entryMode === "insert"}
+                onChange={handleEntryModeChange}
+              />{" "}
+              <Text strong>02 – Delibrate Insert – New Book (work in Part 2 & 3.).</Text>
+            </label>
           </div>
-
         </Card>
 
         {/* PART 2 – INSERT */}
-        {entryMode === "insert" && (
+        {isInsertMode && (
           <Card size="small" style={{ marginBottom: 16, border: "4px double red" }}>
-            <Title level={5} style={{ textAlign: "center", color: "#ae1a1a", marginBottom: 16 }}>
+            <Title level={5} style={{ textAlign: "center", color: "#ae1a8b", marginBottom: 16 }}>
+ 
               PART 2 – DELIBERATE INSERT OF A NEW BOOK
             </Title>
 
@@ -310,7 +255,7 @@ export default function BookForm() {
 
 
             <Row gutter={10}>
-              <Col md={6}>
+                 <Col md={6}>
                 <Form.Item
                   label={
                     <>
@@ -351,7 +296,7 @@ export default function BookForm() {
                     <>
                       <Text strong>04a – Book Gp No</Text>
                       <br />
-                      <Text type="secondary">(??)</Text>
+                       <Text type="secondary">(??)</Text>
                     </>
                   }
                   name="refSBookNo"
@@ -383,7 +328,7 @@ export default function BookForm() {
 
 
             <Form.Item label={<Text strong>05 – Existing Book Title</Text>} name="existingBookTitle">
-              <Input disabled style={{ border: "2px solid red" }} />
+              <Input disabled style={{ border: "1px solid red" }} />
             </Form.Item>
 
 
@@ -414,7 +359,7 @@ export default function BookForm() {
                     <>
                       <Text strong>04a – S. Book No</Text>
                       <br />
-                      <Text type="secondary">(Newly Insert Book)</Text>
+                       <Text type="secondary">(Newly Insert Book)</Text>
                     </>
                   }
                   name="refSBookNo"
@@ -433,7 +378,7 @@ export default function BookForm() {
                     <>
                       <Text strong>04a – Book Gp No</Text>
                       <br />
-                      <Text type="secondary">(Book Belongs)</Text>
+                        <Text type="secondary">(Book Belongs)</Text>
                     </>
                   }
                   name="refSBookNo"
@@ -502,18 +447,18 @@ export default function BookForm() {
 
 
 
-            <Form.Item
-              name="introParas"
-              label={<Text strong>11 – Brief Introduction of the Book</Text>}
-              rules={[{ required: true }]}
-            >
-              <Input.TextArea rows={4} style={{ border: "1px solid black" }} />
-            </Form.Item>
+          <Form.Item
+            name="introParas"
+            label={<Text strong>11 – Brief Introduction of the Book</Text>}
+            rules={[{ required: true }]}
+          >
+            <Input.TextArea rows={4} style={{ border: "1px solid black" }} />
+          </Form.Item>
 
-            <Paragraph type="secondary" style={{ marginTop: 4 }}>
-              12 – (Future option) You may show a live preview of “Current Book
-              Under Development” here, using fields 07–11.
-            </Paragraph>
+          <Paragraph type="secondary" style={{ marginTop: 4 }}>
+            12 – (Future option) You may show a live preview of “Current Book
+            Under Development” here, using fields 07–11.
+          </Paragraph>
 
 
 
@@ -529,7 +474,7 @@ export default function BookForm() {
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
               <Button >Create Authors Note</Button>
               <Button type="primary">View Authors Note</Button>
-              {/* <Button onClick={handleViewBooks}>View All Books</Button> */}
+              <Button onClick={handleViewBooks}>View All Books</Button>
               <Button
                 type="primary"
                 onClick={handleSaveInsertPlan}
@@ -542,87 +487,86 @@ export default function BookForm() {
         )}
 
         {/* PART 3 */}
-        {entryMode === "regular" && (
-          <Card size="small" style={{ border: "4px double red" }}>
-            <Title level={5} style={{ textAlign: "center", color: "#ae1a1aff", marginBottom: 16 }}>
-              PART 3 – CURRENT BOOK UNDER DEVELOPMENT
-            </Title>
+        <Card size="small" style={{ border: "4px double red" }}>
+          <Title level={5} style={{ textAlign: "center", color: "#ae1a1aff", marginBottom: 16 }}>
+            PART 3 – CURRENT BOOK UNDER DEVELOPMENT
+          </Title>
 
-            <Paragraph style={{ marginBottom: 12 }}>
-              <Text strong>07–12.</Text>{" "}
-              <Text>
-                Final book details. In deliberate insert mode, 07 &amp; 08 are filled
-                automatically after SAVE 01.
-              </Text>
-            </Paragraph>
+          <Paragraph style={{ marginBottom: 12 }}>
+            <Text strong>07–12.</Text>{" "}
+            <Text>
+              Final book details. In deliberate insert mode, 07 &amp; 08 are filled
+              automatically after SAVE 01.
+            </Text>
+          </Paragraph>
 
-            <Row gutter={16}>
-              <Col md={6}>
-                <Form.Item name="mBookNo" label={<Text strong>07 – M. Book No</Text>} rules={[{ required: true }]}>
-                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
-                </Form.Item>
-              </Col>
+          <Row gutter={16}>
+            <Col md={6}>
+              <Form.Item name="mBookNo" label={<Text strong>07 – M. Book No</Text>} rules={[{ required: true }]}>
+                <InputNumber style={{ width: "100%", border: "1px solid black" }} />
+              </Form.Item>
+            </Col>
 
-              <Col md={6}>
-                <Form.Item name="sBookNo" label={<Text strong>08 – S. Book No</Text>} rules={[{ required: true }]}>
-                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
-                </Form.Item>
-              </Col>
+            <Col md={6}>
+              <Form.Item name="sBookNo" label={<Text strong>08 – S. Book No</Text>} rules={[{ required: true }]}>
+                <InputNumber style={{ width: "100%", border: "1px solid black" }} />
+              </Form.Item>
+            </Col>
 
-              <Col md={5}>
-                <Form.Item name="bookGroupNo" label={<Text strong>09 – Book Group No (default 00)</Text>}>
-                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
-                </Form.Item>
-              </Col>
+            <Col md={5}>
+              <Form.Item name="bookGroupNo" label={<Text strong>09 – Book Group No (default 00)</Text>}>
+                <InputNumber style={{ width: "100%", border: "1px solid black" }} />
+              </Form.Item>
+            </Col>
 
-              <Col md={5}>
-                <Form.Item name="bookGroupNo" label={<Text strong>09a – Book Group No (default 00)</Text>}>
-                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
-                </Form.Item>
-              </Col>
-
-
-
-            </Row>
-
-            <Form.Item name="bookTitle" label={<Text strong>10 – Book Title</Text>} rules={[{ required: true }]}>
-              <Input style={{ border: "1px solid black" }} />
-            </Form.Item>
+            <Col md={5}>
+              <Form.Item name="bookGroupNo" label={<Text strong>09a – Book Group No (default 00)</Text>}>
+                <InputNumber style={{ width: "100%", border: "1px solid black" }} />
+              </Form.Item>
+            </Col>
 
 
 
-            <Form.Item
-              name="introParas"
-              label={<Text strong>11 – Brief Introduction of the Book</Text>}
-              rules={[{ required: true }]}
+          </Row>
+
+          <Form.Item name="bookTitle" label={<Text strong>10 – Book Title</Text>} rules={[{ required: true }]}>
+            <Input style={{ border: "1px solid black" }} />
+          </Form.Item>
+
+
+
+          <Form.Item
+            name="introParas"
+            label={<Text strong>11 – Brief Introduction of the Book</Text>}
+            rules={[{ required: true }]}
+          >
+            <Input.TextArea rows={4} style={{ border: "1.25px solid black" }} />
+          </Form.Item>
+
+          <Paragraph type="secondary" style={{ marginTop: 4 }}>
+            12 – (Future option) You may show a live preview of “Current Book
+            Under Development” here, using fields 07–11.
+          </Paragraph>
+
+
+
+
+          <Divider style={{ margin: "16px 0 12px" }} />
+
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <Button >Create Authors Note</Button>
+            <Button type="primary">View Authors Note</Button>
+            <Button onClick={handleViewBooks}>View All Books</Button>
+            <Button
+              type="primary"
+              onClick={handleSaveBook}
+              loading={savingBook}
             >
-              <Input.TextArea rows={4} style={{ border: "1.25px solid black" }} />
-            </Form.Item>
+              SAVE 02 – Save Current Book (07–12)
+            </Button>
+          </div>
+        </Card>
 
-            <Paragraph type="secondary" style={{ marginTop: 4 }}>
-              12 – (Future option) You may show a live preview of “Current Book
-              Under Development” here, using fields 07–11.
-            </Paragraph>
-
-
-
-
-            <Divider style={{ margin: "16px 0 12px" }} />
-
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-              <Button >Create Authors Note</Button>
-              <Button type="primary">View Authors Note</Button>
-              {/* <Button onClick={handleViewBooks}>View All Books</Button> */}
-              <Button
-                type="primary"
-                onClick={handleSaveBook}
-                loading={savingBook}
-              >
-                SAVE 02 – Save Current Book (07–12)
-              </Button>
-            </div>
-          </Card>
-        )}
         {/* MODAL */}
         <Modal
           title="All Books"
