@@ -278,7 +278,7 @@ export default function BookForm() {
                   onChange={handleEntryModeChange}
                 />{" "}
                 <Text strong>
-                  02 – Deliberate Insert – New Book (work in Part 2 &amp; 3.)
+                  02 – Deliberate Insert – New Book (work in Part 2.)
                 </Text>
               </label>
             </div>
