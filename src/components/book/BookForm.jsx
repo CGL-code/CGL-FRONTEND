@@ -246,7 +246,8 @@ export default function BookForm() {
         {/* PART 2 – INSERT */}
         {isInsertMode && (
           <Card size="small" style={{ marginBottom: 16, border: "4px double red" }}>
-            <Title level={5} style={{ textAlign: "center", color: "#ae1a1a", marginBottom: 16 }}>
+            <Title level={5} style={{ textAlign: "center", color: "#ae1a8b", marginBottom: 16 }}>
+ 
               PART 2 – DELIBERATE INSERT OF A NEW BOOK
             </Title>
 
@@ -327,7 +328,7 @@ export default function BookForm() {
 
 
             <Form.Item label={<Text strong>05 – Existing Book Title</Text>} name="existingBookTitle">
-              <Input disabled style={{ border: "2px solid red" }} />
+              <Input disabled style={{ border: "1px solid red" }} />
             </Form.Item>
 
 
