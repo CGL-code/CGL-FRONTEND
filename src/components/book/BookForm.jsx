@@ -710,7 +710,6 @@ export default function BookForm() {
             }}
           />
         </Modal>
-        {/* <h1></h1> */}
 
       </Form>
     </Card>
