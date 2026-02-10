@@ -625,91 +625,92 @@ export default function BookForm() {
         )}
         {/* MODAL */}
         <Modal
-  title="All Books"
-  open={modalVisible}
-  onCancel={() => setModalVisible(false)}
-  footer={null}
-  width={1200}
-  bodyStyle={{ padding: 16 }}
->
-  <Table
-    rowKey="_id"
-    loading={loadingBooks}
-    dataSource={booksList}
-    tableLayout="fixed"
-    pagination={{ pageSize: 8 }}
-    columns={[
-      {
-        title: "M.Book No",
-        dataIndex: "mBookNo",
-        width: 90,
-      },
-      {
-        title: "S.Book No",
-        dataIndex: "sBookNo",
-        width: 90,
-      },
-      {
-        title: "Title",
-        dataIndex: "title",
-        width: 220,
-        render: (text) => (
-          <div
-            style={{
-              whiteSpace: "normal",
-              wordBreak: "break-word",
+          title="All Books"
+          open={modalVisible}
+          onCancel={() => setModalVisible(false)}
+          footer={null}
+          width={1200}
+          bodyStyle={{ padding: 16 }}
+        >
+          <Table
+            rowKey="_id"
+            loading={loadingBooks}
+            dataSource={booksList}
+            tableLayout="fixed"
+            pagination={{ pageSize: 8 }}
+            columns={[
+              {
+                title: "M.Book No",
+                dataIndex: "mBookNo",
+                width: 90,
+              },
+              {
+                title: "S.Book No",
+                dataIndex: "sBookNo",
+                width: 90,
+              },
+              {
+                title: "Title",
+                dataIndex: "title",
+                width: 220,
+                render: (text) => (
+                  <div
+                    style={{
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                    }}
+                  >
+                    {text}
+                  </div>
+                ),
+              },
+              {
+                title: "Type",
+                dataIndex: "typeOfEntry",
+                width: 120,
+              },
+              {
+                title: "Group No",
+                dataIndex: "bookGroupNo",
+                width: 100,
+              },
+              {
+                title: "Section",
+                dataIndex: "section",
+                width: 120,
+              },
+              {
+                title: "Introduction",
+                dataIndex: "introParas",
+                width: 350,
+                render: (text) => (
+                  <div
+                    style={{
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                      lineHeight: "1.5",
+                    }}
+                  >
+                    {text}
+                  </div>
+                ),
+              },
+            ]}
+            rowSelection={{
+              type: "radio",
+              onChange: (_, rows) => {
+                const book = rows[0];
+                form.setFieldsValue({
+                  refMBookNo: book.mBookNo,
+                  refSBookNo: book.sBookNo,
+                  existingBookTitle: book.title,
+                });
+                setModalVisible(false);
+              },
             }}
-          >
-            {text}
-          </div>
-        ),
-      },
-      {
-        title: "Type",
-        dataIndex: "typeOfEntry",
-        width: 120,
-      },
-      {
-        title: "Group No",
-        dataIndex: "bookGroupNo",
-        width: 100,
-      },
-      {
-        title: "Section",
-        dataIndex: "section",
-        width: 120,
-      },
-      {
-        title: "Introduction",
-        dataIndex: "introParas",
-        width: 350,
-        render: (text) => (
-          <div
-            style={{
-              whiteSpace: "normal",
-              wordBreak: "break-word",
-              lineHeight: "1.5",
-            }}
-          >
-            {text}
-          </div>
-        ),
-      },
-    ]}
-    rowSelection={{
-      type: "radio",
-      onChange: (_, rows) => {
-        const book = rows[0];
-        form.setFieldsValue({
-          refMBookNo: book.mBookNo,
-          refSBookNo: book.sBookNo,
-          existingBookTitle: book.title,
-        });
-        setModalVisible(false);
-      },
-    }}
-  />
-</Modal>
+          />
+        </Modal>
+        {/* <h1></h1> */}
 
       </Form>
     </Card>
