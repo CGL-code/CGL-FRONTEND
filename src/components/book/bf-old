@@ -31,14 +31,10 @@ export default function BookForm() {
 
   const [savingInsertPlan, setSavingInsertPlan] = useState(false);
   const [savingBook, setSavingBook] = useState(false);
-  const [introModalVisible, setIntroModalVisible] = useState(false);
-  const [selectedIntro, setSelectedIntro] = useState("");
 
   const [modalVisible, setModalVisible] = useState(false);
   const [booksList, setBooksList] = useState([]);
   const [loadingBooks, setLoadingBooks] = useState(false);
-  const [insertCalculated, setInsertCalculated] = useState(false);
-
 
   const isInsertMode = entryMode === "insert";
 
@@ -118,64 +114,22 @@ export default function BookForm() {
         refSBookNo: values.refSBookNo,
         title: values.newBookTitle,
         reason: form.getFieldValue("insertReason"),
+
       });
 
       form.setFieldsValue({
-        newMBookNo: res.data.mBookNo,
-        newSBookNo: res.data.sBookNo,
-        newBookGroupNo: res.data.bookGroupNo,
-        newSection: res.data.section,
+        mBookNo: res.data.mBookNo,
+        sBookNo: res.data.sBookNo,
+        bookTitle: res.data.title,
       });
-
-      setInsertCalculated(true);  // ✅ IMPORTANT
 
       message.success("Insert location calculated successfully.");
     } catch (err) {
-      message.error("Insert calculation failed.");
+      message.error(err.response?.data?.error || "Insert calculation failed.");
     } finally {
       setSavingInsertPlan(false);
     }
   };
-
-
-  const handleSaveInsertedBook = async () => {
-    if (!insertCalculated) {
-      message.error("Please calculate insert location first.");
-      return;
-    }
-
-    try {
-      const values = await form.validateFields([
-        "newBookTitle",
-        "introParas",
-      ]);
-
-      setSavingBook(true);
-
-      await saveBookApi({
-        typeOfEntry: "deliberate",
-        mBookNo: form.getFieldValue("newMBookNo"),
-        sBookNo: form.getFieldValue("newSBookNo"),
-        bookGroupNo: form.getFieldValue("newBookGroupNo"),
-        section: form.getFieldValue("newSection"),
-        title: values.newBookTitle,
-        introParas: values.introParas,
-      });
-
-      message.success("Inserted book saved successfully.");
-
-      form.resetFields();
-      setInsertCalculated(false);
-      setEntryMode(null);
-
-    } catch (err) {
-      message.error("Save failed.");
-    } finally {
-      setSavingBook(false);
-    }
-  };
-
-
 
   /* ===============================
      SAVE 02 – FINAL BOOK
@@ -348,14 +302,12 @@ export default function BookForm() {
         {/* PART 2 – INSERT */}
         {entryMode === "insert" && (
           <Card size="small" style={{ marginBottom: 16, border: "4px double red" }}>
-            <Title
-              level={5}
-              style={{ textAlign: "center", color: "#ae1a1a", marginBottom: 16 }}
-            >
+            <Title level={5} style={{ textAlign: "center", color: "#ae1a1a", marginBottom: 16 }}>
               PART 2 – DELIBERATE INSERT OF A NEW BOOK
             </Title>
 
-            {/* ================= EXISTING BOOK (AUTO + DISABLED) ================= */}
+
+
 
             <Row gutter={10}>
               <Col md={6}>
@@ -370,10 +322,7 @@ export default function BookForm() {
                   name="refMBookNo"
                   rules={[{ required: true }]}
                 >
-                  <InputNumber
-                    disabled
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
+                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
               </Col>
 
@@ -389,12 +338,12 @@ export default function BookForm() {
                   name="refSBookNo"
                   rules={[{ required: true }]}
                 >
-                  <InputNumber
-                    disabled
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
+                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
               </Col>
+
+
+
 
               <Col md={5}>
                 <Form.Item
@@ -402,47 +351,45 @@ export default function BookForm() {
                     <>
                       <Text strong>04a – Book Gp No</Text>
                       <br />
-                      {/* <Text type="secondary">(Existing reference)</Text> */}
+                      <Text type="secondary">(??)</Text>
                     </>
                   }
-                  name="refBookGroupNo"
+                  name="refSBookNo"
                   rules={[{ required: true }]}
                 >
-                  <InputNumber
-                    disabled
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
+                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
               </Col>
+
 
               <Col md={5}>
                 <Form.Item
                   label={
                     <>
-                      <Text strong>05a – Section</Text>
+                      <Text strong>05a –  Section</Text>
                       <br />
-                      <Text type="">(Existing reference)</Text>
+                      <Text type="secondary">(Book Belongs)</Text>
                     </>
                   }
-                  name="refSection"
+                  name="refSBookNo"
                   rules={[{ required: true }]}
                 >
-                  <InputNumber
-                    disabled
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
+                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
               </Col>
             </Row>
 
-            <Form.Item
-              label={<Text strong>05 – Existing Book Title</Text>}
-              name="existingBookTitle"
-            >
+
+
+
+            <Form.Item label={<Text strong>05 – Existing Book Title</Text>} name="existingBookTitle">
               <Input disabled style={{ border: "2px solid red" }} />
             </Form.Item>
 
-            {/* ================= NEW BOOK (MANUAL INPUT ALLOWED) ================= */}
+
+
+
+
 
             <Row gutter={16}>
               <Col md={6}>
@@ -454,12 +401,10 @@ export default function BookForm() {
                       <Text type="secondary">(Newly Insert Book)</Text>
                     </>
                   }
-                  name="newMBookNo"
+                  name="refMBookNo"
                   rules={[{ required: true }]}
                 >
-                  <InputNumber
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
+                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
               </Col>
 
@@ -472,14 +417,15 @@ export default function BookForm() {
                       <Text type="secondary">(Newly Insert Book)</Text>
                     </>
                   }
-                  name="newSBookNo"
+                  name="refSBookNo"
                   rules={[{ required: true }]}
                 >
-                  <InputNumber
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
+                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
               </Col>
+
+
+
 
               <Col md={5}>
                 <Form.Item
@@ -490,89 +436,110 @@ export default function BookForm() {
                       <Text type="secondary">(Book Belongs)</Text>
                     </>
                   }
-                  name="newBookGroupNo"
+                  name="refSBookNo"
                   rules={[{ required: true }]}
                 >
-                  <InputNumber
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
+                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
               </Col>
+
 
               <Col md={5}>
                 <Form.Item
                   label={
                     <>
-                      <Text strong>05a – Section</Text>
+                      <Text strong>05a –  Section</Text>
                       <br />
                       <Text type="secondary">(Book Belongs)</Text>
                     </>
                   }
-                  name="newSection"
+                  name="refSBookNo"
                   rules={[{ required: true }]}
                 >
-                  <InputNumber
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
+                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
               </Col>
+
+
+
+
+
+
+
+
+
             </Row>
 
+
+
+
+
+
+
+
+
+
+
+
             <Form.Item
-              label={<Text strong>06 – New Book Title</Text>}
+              label={<Text strong>05 – New Book Title</Text>}
               name="newBookTitle"
               rules={[{ required: true }]}
             >
               <Input style={{ border: "1px solid black" }} />
             </Form.Item>
 
-            <Form.Item
-              label={<Text strong>07 – Reason for inserting this book (optional)</Text>}
-              name="insertReason"
-            >
-              <Input.TextArea
-                rows={3}
-                style={{ border: "1px solid black" }}
-              />
+            <Form.Item label={
+              <Text strong>
+                06 – Reason for inserting this book (optional)
+              </Text>
+            } name="insertReason">
+              <Input.TextArea rows={3} style={{ border: "1px solid black" }}
+                placeholder="Short explanation (06) – for future reference / audit." />
             </Form.Item>
+
+
+
+
 
             <Form.Item
               name="introParas"
               label={<Text strong>11 – Brief Introduction of the Book</Text>}
               rules={[{ required: true }]}
             >
-              <Input.TextArea
-                rows={4}
-                style={{ border: "1px solid black" }}
-              />
+              <Input.TextArea rows={4} style={{ border: "1px solid black" }} />
             </Form.Item>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-              <Button>Create Authors Note</Button>
-              <Button type="primary">View Authors Note</Button>
+            <Paragraph type="secondary" style={{ marginTop: 4 }}>
+              12 – (Future option) You may show a live preview of “Current Book
+              Under Development” here, using fields 07–11.
+            </Paragraph>
 
+
+
+
+
+
+
+
+
+
+
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+              <Button >Create Authors Note</Button>
+              <Button type="primary">View Authors Note</Button>
+              {/* <Button onClick={handleViewBooks}>View All Books</Button> */}
               <Button
                 type="primary"
                 onClick={handleSaveInsertPlan}
                 loading={savingInsertPlan}
               >
-                SAVE 01 – Calculate Insert Location
-              </Button>
-
-              <Button
-                type="primary"
-                onClick={handleSaveInsertedBook}
-                loading={savingBook}
-                disabled={!insertCalculated}
-              >
-                SAVE 02 – Save Inserted Book
+                SAVE 01 – Calculate Insert Location (03–06)
               </Button>
             </div>
-
           </Card>
         )}
-
-
 
         {/* PART 3 */}
         {entryMode === "regular" && (
@@ -658,19 +625,13 @@ export default function BookForm() {
         )}
         {/* MODAL */}
         <Modal
-  title="All Books"
-  open={modalVisible}
-  centered
-  onCancel={() => setModalVisible(false)}
-  footer={[
-    <Button key="close" onClick={() => setModalVisible(false)}>
-      Close
-    </Button>,
-  ]}
-  width={1200}
-  bodyStyle={{ padding: 16 }}
->
-
+          title="All Books"
+          open={modalVisible}
+          onCancel={() => setModalVisible(false)}
+          footer={null}
+          width={1200}
+          bodyStyle={{ padding: 16 }}
+        >
           <Table
             rowKey="_id"
             loading={loadingBooks}
@@ -721,70 +682,35 @@ export default function BookForm() {
               {
                 title: "Introduction",
                 dataIndex: "introParas",
-                width: 150,
+                width: 350,
                 render: (text) => (
-                  <Button
-                    type="link"
-                    onClick={() => {
-                      setSelectedIntro(text);
-                      setIntroModalVisible(true);
+                  <div
+                    style={{
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                      lineHeight: "1.5",
                     }}
                   >
-                    View Intro
-                  </Button>
+                    {text}
+                  </div>
                 ),
               },
-
             ]}
             rowSelection={{
               type: "radio",
               onChange: (_, rows) => {
                 const book = rows[0];
-
                 form.setFieldsValue({
                   refMBookNo: book.mBookNo,
                   refSBookNo: book.sBookNo,
-                  refBookGroupNo: book.bookGroupNo,
-                  refSection: book.section,
                   existingBookTitle: book.title,
                 });
-
                 setModalVisible(false);
               },
             }}
-
           />
         </Modal>
-        <Modal
-          title="Book Introduction"
-          open={introModalVisible}
-          centered
-          onCancel={() => setIntroModalVisible(false)}
-          footer={null}
-          width={700}
-        >
-          <div
-            style={{
-              whiteSpace: "pre-wrap",
-              lineHeight: "1.6",
-              fontSize: 15,
-              maxHeight: "60vh",
-              overflowY: "auto",
-              padding: 10,
-            }}
-          >
-            {selectedIntro}
-          </div>
-
-          <div style={{ textAlign: "center", marginTop: 20 }}>
-            <Button type="primary" onClick={() => setIntroModalVisible(false)}>
-              Close
-            </Button>
-          </div>
-        </Modal>
-
-
-        {/* <h1></h1> */}
+            {/* <h1></h1> */}
       </Form>
     </Card>
   );

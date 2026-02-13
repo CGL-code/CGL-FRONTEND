@@ -31,14 +31,10 @@ export default function BookForm() {
 
   const [savingInsertPlan, setSavingInsertPlan] = useState(false);
   const [savingBook, setSavingBook] = useState(false);
-  const [introModalVisible, setIntroModalVisible] = useState(false);
-  const [selectedIntro, setSelectedIntro] = useState("");
 
   const [modalVisible, setModalVisible] = useState(false);
   const [booksList, setBooksList] = useState([]);
   const [loadingBooks, setLoadingBooks] = useState(false);
-  const [insertCalculated, setInsertCalculated] = useState(false);
-
 
   const isInsertMode = entryMode === "insert";
 
@@ -103,78 +99,67 @@ export default function BookForm() {
   /* ===============================
      SAVE 01 – INSERT PLAN
      =============================== */
-  const handleSaveInsertPlan = async () => {
-    try {
-      const values = await form.validateFields([
-        "refMBookNo",
-        "refSBookNo",
-        "newBookTitle",
-      ]);
+ const handleSaveInsertPlan = async () => {
+  try {
+    const values = await form.validateFields([
+      "refMBookNo",
+      "refSBookNo",
+      "newBookTitle",
+    ]);
 
-      setSavingInsertPlan(true);
+    setSavingInsertPlan(true);
 
-      const res = await saveInsertPlanApi({
-        refMBookNo: values.refMBookNo,
-        refSBookNo: values.refSBookNo,
-        title: values.newBookTitle,
-        reason: form.getFieldValue("insertReason"),
-      });
+    const res = await saveInsertPlanApi({
+      refMBookNo: values.refMBookNo,
+      refSBookNo: values.refSBookNo,
+      title: values.newBookTitle,
+      reason: form.getFieldValue("insertReason"),
+    });
 
-      form.setFieldsValue({
-        newMBookNo: res.data.mBookNo,
-        newSBookNo: res.data.sBookNo,
-        newBookGroupNo: res.data.bookGroupNo,
-        newSection: res.data.section,
-      });
+    form.setFieldsValue({
+      newMBookNo: res.data.mBookNo,
+      newSBookNo: res.data.sBookNo,
+      newBookGroupNo: res.data.bookGroupNo,
+      newSection: res.data.section,
+    });
 
-      setInsertCalculated(true);  // ✅ IMPORTANT
+    message.success("Insert location calculated successfully.");
+  } catch (err) {
+    message.error("Insert calculation failed.");
+  } finally {
+    setSavingInsertPlan(false);
+  }
+};
 
-      message.success("Insert location calculated successfully.");
-    } catch (err) {
-      message.error("Insert calculation failed.");
-    } finally {
-      setSavingInsertPlan(false);
-    }
-  };
+const handleSaveInsertedBook = async () => {
+  try {
+    const values = await form.validateFields([
+      "newMBookNo",
+      "newSBookNo",
+      "newBookTitle",
+      "introParas",
+    ]);
 
+    setSavingBook(true);
 
-  const handleSaveInsertedBook = async () => {
-    if (!insertCalculated) {
-      message.error("Please calculate insert location first.");
-      return;
-    }
+    await saveBookApi({
+      typeOfEntry: "deliberate",
+      mBookNo: values.newMBookNo,
+      sBookNo: values.newSBookNo,
+      bookGroupNo: values.newBookGroupNo,
+      section: values.newSection,
+      title: values.newBookTitle,
+      introParas: values.introParas,
+    });
 
-    try {
-      const values = await form.validateFields([
-        "newBookTitle",
-        "introParas",
-      ]);
-
-      setSavingBook(true);
-
-      await saveBookApi({
-        typeOfEntry: "deliberate",
-        mBookNo: form.getFieldValue("newMBookNo"),
-        sBookNo: form.getFieldValue("newSBookNo"),
-        bookGroupNo: form.getFieldValue("newBookGroupNo"),
-        section: form.getFieldValue("newSection"),
-        title: values.newBookTitle,
-        introParas: values.introParas,
-      });
-
-      message.success("Inserted book saved successfully.");
-
-      form.resetFields();
-      setInsertCalculated(false);
-      setEntryMode(null);
-
-    } catch (err) {
-      message.error("Save failed.");
-    } finally {
-      setSavingBook(false);
-    }
-  };
-
+    message.success("Inserted book saved successfully.");
+    form.resetFields();
+  } catch (err) {
+    message.error("Save failed.");
+  } finally {
+    setSavingBook(false);
+  }
+};
 
 
   /* ===============================
@@ -346,232 +331,123 @@ export default function BookForm() {
         </Card>
 
         {/* PART 2 – INSERT */}
-        {entryMode === "insert" && (
-          <Card size="small" style={{ marginBottom: 16, border: "4px double red" }}>
-            <Title
-              level={5}
-              style={{ textAlign: "center", color: "#ae1a1a", marginBottom: 16 }}
-            >
-              PART 2 – DELIBERATE INSERT OF A NEW BOOK
-            </Title>
+       {entryMode === "insert" && (
+  <Card size="small" style={{ marginBottom: 16, border: "4px double red" }}>
+    <Title level={5} style={{ textAlign: "center", color: "#ae1a1a" }}>
+      PART 2 – DELIBERATE INSERT OF A NEW BOOK
+    </Title>
 
-            {/* ================= EXISTING BOOK (AUTO + DISABLED) ================= */}
+    {/* ===== EXISTING BOOK (AUTO TRANSFERRED & DISABLED) ===== */}
 
-            <Row gutter={10}>
-              <Col md={6}>
-                <Form.Item
-                  label={
-                    <>
-                      <Text strong>03 – M. Book No</Text>
-                      <br />
-                      <Text type="secondary">(Existing reference)</Text>
-                    </>
-                  }
-                  name="refMBookNo"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber
-                    disabled
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
-                </Form.Item>
-              </Col>
+    <Row gutter={16}>
+      <Col md={6}>
+        <Form.Item name="refMBookNo" label="03 – M.Book No (Reference)">
+          <InputNumber disabled style={{ width: "100%" }} />
+        </Form.Item>
+      </Col>
 
-              <Col md={6}>
-                <Form.Item
-                  label={
-                    <>
-                      <Text strong>04 – S. Book No</Text>
-                      <br />
-                      <Text type="secondary">(Existing reference)</Text>
-                    </>
-                  }
-                  name="refSBookNo"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber
-                    disabled
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
-                </Form.Item>
-              </Col>
+      <Col md={6}>
+        <Form.Item name="refSBookNo" label="04 – S.Book No (Reference)">
+          <InputNumber disabled style={{ width: "100%" }} />
+        </Form.Item>
+      </Col>
 
-              <Col md={5}>
-                <Form.Item
-                  label={
-                    <>
-                      <Text strong>04a – Book Gp No</Text>
-                      <br />
-                      {/* <Text type="secondary">(Existing reference)</Text> */}
-                    </>
-                  }
-                  name="refBookGroupNo"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber
-                    disabled
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
-                </Form.Item>
-              </Col>
+      <Col md={6}>
+        <Form.Item name="refBookGroupNo" label="04a – Book Group No">
+          <InputNumber disabled style={{ width: "100%" }} />
+        </Form.Item>
+      </Col>
 
-              <Col md={5}>
-                <Form.Item
-                  label={
-                    <>
-                      <Text strong>05a – Section</Text>
-                      <br />
-                      <Text type="">(Existing reference)</Text>
-                    </>
-                  }
-                  name="refSection"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber
-                    disabled
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
+      <Col md={6}>
+        <Form.Item name="refSection" label="05a – Section">
+          <InputNumber disabled style={{ width: "100%" }} />
+        </Form.Item>
+      </Col>
+    </Row>
 
-            <Form.Item
-              label={<Text strong>05 – Existing Book Title</Text>}
-              name="existingBookTitle"
-            >
-              <Input disabled style={{ border: "2px solid red" }} />
-            </Form.Item>
+    <Form.Item name="existingBookTitle" label="05 – Existing Book Title">
+      <Input disabled />
+    </Form.Item>
 
-            {/* ================= NEW BOOK (MANUAL INPUT ALLOWED) ================= */}
+    <Divider />
 
-            <Row gutter={16}>
-              <Col md={6}>
-                <Form.Item
-                  label={
-                    <>
-                      <Text strong>03a – M. Book No</Text>
-                      <br />
-                      <Text type="secondary">(Newly Insert Book)</Text>
-                    </>
-                  }
-                  name="newMBookNo"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
-                </Form.Item>
-              </Col>
+    {/* ===== NEW BOOK TITLE ===== */}
 
-              <Col md={6}>
-                <Form.Item
-                  label={
-                    <>
-                      <Text strong>04a – S. Book No</Text>
-                      <br />
-                      <Text type="secondary">(Newly Insert Book)</Text>
-                    </>
-                  }
-                  name="newSBookNo"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
-                </Form.Item>
-              </Col>
+    <Form.Item
+      name="newBookTitle"
+      label="06 – New Book Title"
+      rules={[{ required: true, message: "Please enter new book title" }]}
+    >
+      <Input />
+    </Form.Item>
 
-              <Col md={5}>
-                <Form.Item
-                  label={
-                    <>
-                      <Text strong>04a – Book Gp No</Text>
-                      <br />
-                      <Text type="secondary">(Book Belongs)</Text>
-                    </>
-                  }
-                  name="newBookGroupNo"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
-                </Form.Item>
-              </Col>
+    <Form.Item
+      name="insertReason"
+      label="07 – Reason for Insert (Optional)"
+    >
+      <Input.TextArea rows={3} />
+    </Form.Item>
 
-              <Col md={5}>
-                <Form.Item
-                  label={
-                    <>
-                      <Text strong>05a – Section</Text>
-                      <br />
-                      <Text type="secondary">(Book Belongs)</Text>
-                    </>
-                  }
-                  name="newSection"
-                  rules={[{ required: true }]}
-                >
-                  <InputNumber
-                    style={{ width: "100%", border: "1px solid black" }}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
+    <Button
+      type="primary"
+      onClick={handleSaveInsertPlan}
+      loading={savingInsertPlan}
+      style={{ marginBottom: 20 }}
+    >
+      SAVE 01 – Calculate Insert Location
+    </Button>
 
-            <Form.Item
-              label={<Text strong>06 – New Book Title</Text>}
-              name="newBookTitle"
-              rules={[{ required: true }]}
-            >
-              <Input style={{ border: "1px solid black" }} />
-            </Form.Item>
+    <Divider />
 
-            <Form.Item
-              label={<Text strong>07 – Reason for inserting this book (optional)</Text>}
-              name="insertReason"
-            >
-              <Input.TextArea
-                rows={3}
-                style={{ border: "1px solid black" }}
-              />
-            </Form.Item>
+    {/* ===== NEW CALCULATED LOCATION (AUTO AFTER SAVE 01) ===== */}
 
-            <Form.Item
-              name="introParas"
-              label={<Text strong>11 – Brief Introduction of the Book</Text>}
-              rules={[{ required: true }]}
-            >
-              <Input.TextArea
-                rows={4}
-                style={{ border: "1px solid black" }}
-              />
-            </Form.Item>
+    <Title level={5} style={{ color: "green" }}>
+      New Insert Location (System Generated)
+    </Title>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-              <Button>Create Authors Note</Button>
-              <Button type="primary">View Authors Note</Button>
+    <Row gutter={16}>
+      <Col md={6}>
+        <Form.Item name="newMBookNo" label="New M.Book No">
+          <InputNumber disabled style={{ width: "100%" }} />
+        </Form.Item>
+      </Col>
 
-              <Button
-                type="primary"
-                onClick={handleSaveInsertPlan}
-                loading={savingInsertPlan}
-              >
-                SAVE 01 – Calculate Insert Location
-              </Button>
+      <Col md={6}>
+        <Form.Item name="newSBookNo" label="New S.Book No">
+          <InputNumber disabled style={{ width: "100%" }} />
+        </Form.Item>
+      </Col>
 
-              <Button
-                type="primary"
-                onClick={handleSaveInsertedBook}
-                loading={savingBook}
-                disabled={!insertCalculated}
-              >
-                SAVE 02 – Save Inserted Book
-              </Button>
-            </div>
+      <Col md={6}>
+        <Form.Item name="newBookGroupNo" label="New Group No">
+          <InputNumber disabled style={{ width: "100%" }} />
+        </Form.Item>
+      </Col>
 
-          </Card>
-        )}
+      <Col md={6}>
+        <Form.Item name="newSection" label="New Section">
+          <InputNumber disabled style={{ width: "100%" }} />
+        </Form.Item>
+      </Col>
+    </Row>
 
+    <Form.Item
+      name="introParas"
+      label="11 – Brief Introduction"
+      rules={[{ required: true }]}
+    >
+      <Input.TextArea rows={4} />
+    </Form.Item>
+
+    <Button
+      type="primary"
+      onClick={handleSaveInsertedBook}
+      loading={savingBook}
+    >
+      SAVE 02 – Save Inserted Book
+    </Button>
+  </Card>
+)}
 
 
         {/* PART 3 */}
@@ -658,19 +534,13 @@ export default function BookForm() {
         )}
         {/* MODAL */}
         <Modal
-  title="All Books"
-  open={modalVisible}
-  centered
-  onCancel={() => setModalVisible(false)}
-  footer={[
-    <Button key="close" onClick={() => setModalVisible(false)}>
-      Close
-    </Button>,
-  ]}
-  width={1200}
-  bodyStyle={{ padding: 16 }}
->
-
+          title="All Books"
+          open={modalVisible}
+          onCancel={() => setModalVisible(false)}
+          footer={null}
+          width={1200}
+          bodyStyle={{ padding: 16 }}
+        >
           <Table
             rowKey="_id"
             loading={loadingBooks}
@@ -721,70 +591,40 @@ export default function BookForm() {
               {
                 title: "Introduction",
                 dataIndex: "introParas",
-                width: 150,
+                width: 350,
                 render: (text) => (
-                  <Button
-                    type="link"
-                    onClick={() => {
-                      setSelectedIntro(text);
-                      setIntroModalVisible(true);
+                  <div
+                    style={{
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                      lineHeight: "1.5",
                     }}
                   >
-                    View Intro
-                  </Button>
+                    {text}
+                  </div>
                 ),
               },
-
             ]}
             rowSelection={{
-              type: "radio",
-              onChange: (_, rows) => {
-                const book = rows[0];
+  type: "radio",
+  onChange: (_, rows) => {
+    const book = rows[0];
 
-                form.setFieldsValue({
-                  refMBookNo: book.mBookNo,
-                  refSBookNo: book.sBookNo,
-                  refBookGroupNo: book.bookGroupNo,
-                  refSection: book.section,
-                  existingBookTitle: book.title,
-                });
+    form.setFieldsValue({
+      refMBookNo: book.mBookNo,
+      refSBookNo: book.sBookNo,
+      refBookGroupNo: book.bookGroupNo,
+      refSection: book.section,
+      existingBookTitle: book.title,
+    });
 
-                setModalVisible(false);
-              },
-            }}
+    setModalVisible(false);
+  },
+}}
 
           />
         </Modal>
-        <Modal
-          title="Book Introduction"
-          open={introModalVisible}
-          centered
-          onCancel={() => setIntroModalVisible(false)}
-          footer={null}
-          width={700}
-        >
-          <div
-            style={{
-              whiteSpace: "pre-wrap",
-              lineHeight: "1.6",
-              fontSize: 15,
-              maxHeight: "60vh",
-              overflowY: "auto",
-              padding: 10,
-            }}
-          >
-            {selectedIntro}
-          </div>
-
-          <div style={{ textAlign: "center", marginTop: 20 }}>
-            <Button type="primary" onClick={() => setIntroModalVisible(false)}>
-              Close
-            </Button>
-          </div>
-        </Modal>
-
-
-        {/* <h1></h1> */}
+            {/* <h1></h1> */}
       </Form>
     </Card>
   );
