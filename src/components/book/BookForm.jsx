@@ -590,13 +590,13 @@ export default function BookForm() {
             </Paragraph>
 
             <Row gutter={16}>
-              <Col md={5}>
+              <Col md={6}>
                 <Form.Item name="mBookNo" label={<Text strong>07 – M. Book No</Text>} rules={[{ required: true }]}>
                   <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
               </Col>
 
-              <Col md={5}>
+              <Col md={6}>
                 <Form.Item name="sBookNo" label={<Text strong>08 – S. Book No</Text>} rules={[{ required: true }]}>
                   <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
