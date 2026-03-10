@@ -40,7 +40,7 @@ export default function BookForm() {
   const [insertCalculated, setInsertCalculated] = useState(false);
 
 
-  const isInsertMode = entryMode === "insert";
+  // const isInsertMode = entryMode === "insert";
 
   /* ===============================
      REGULAR MODE AUTO NUMBER
@@ -130,7 +130,7 @@ export default function BookForm() {
       setInsertCalculated(true);  // ✅ IMPORTANT
 
       message.success("Insert location calculated successfully.");
-    } catch (err) {
+    } catch {
       message.error("Insert calculation failed.");
     } finally {
       setSavingInsertPlan(false);
@@ -168,7 +168,7 @@ export default function BookForm() {
       setInsertCalculated(false);
       setEntryMode(null);
 
-    } catch (err) {
+    } catch  {
       message.error("Save failed.");
     } finally {
       setSavingBook(false);
@@ -230,28 +230,28 @@ export default function BookForm() {
   /* ===============================
      TABLE COLUMNS
      =============================== */
-  const columns = [
-    { title: "M.BookNo", dataIndex: "mBookNo" },
-    { title: "S.BookNo", dataIndex: "sBookNo" },
-    { title: "Title", dataIndex: "title" },
-    { title: "Type", dataIndex: "typeOfEntry" },
-    { title: "Group No", dataIndex: "bookGroupNo" },
+  // const columns = [
+  //   { title: "M.BookNo", dataIndex: "mBookNo" },
+  //   { title: "S.BookNo", dataIndex: "sBookNo" },
+  //   { title: "Title", dataIndex: "title" },
+  //   { title: "Type", dataIndex: "typeOfEntry" },
+  //   { title: "Group No", dataIndex: "bookGroupNo" },
 
-    { title: "Section", dataIndex: "Section" },
-
-
+  //   { title: "Section", dataIndex: "Section" },
 
 
 
 
 
-    {
-      title: "Introduction",
-      dataIndex: "introParas",
-      render: (text) =>
-        text && text.length > 60 ? text.slice(0, 60) + "..." : text,
-    },
-  ];
+
+
+  //   {
+  //     title: "Introduction",
+  //     dataIndex: "introParas",
+  //     render: (text) =>
+  //       text && text.length > 60 ? text.slice(0, 60) + "..." : text,
+  //   },
+  // ];
 
   return (
     <Card
@@ -357,7 +357,7 @@ export default function BookForm() {
 
             {/* ================= EXISTING BOOK (AUTO + DISABLED) ================= */}
 
-            <Row gutter={10}>
+            <Row gutter={12}>
               <Col md={6}>
                 <Form.Item
                   label={
@@ -396,7 +396,7 @@ export default function BookForm() {
                 </Form.Item>
               </Col>
 
-              <Col md={5}>
+              <Col md={6}>
                 <Form.Item
                   label={
                     <>
@@ -415,7 +415,7 @@ export default function BookForm() {
                 </Form.Item>
               </Col>
 
-              <Col md={5}>
+              <Col md={6}>
                 <Form.Item
                   label={
                     <>
@@ -444,14 +444,14 @@ export default function BookForm() {
 
             {/* ================= NEW BOOK (MANUAL INPUT ALLOWED) ================= */}
 
-            <Row gutter={16}>
+            <Row gutter={12}>
               <Col md={6}>
                 <Form.Item
                   label={
                     <>
                       <Text strong>03a – M. Book No</Text>
                       <br />
-                      <Text type="secondary">(Newly Insert Book)</Text>
+                      <Text type="secondary">(Newly Insert)</Text>
                     </>
                   }
                   name="newMBookNo"
@@ -469,7 +469,7 @@ export default function BookForm() {
                     <>
                       <Text strong>04a – S. Book No</Text>
                       <br />
-                      <Text type="secondary">(Newly Insert Book)</Text>
+                      <Text type="secondary">(Newly Insert)</Text>
                     </>
                   }
                   name="newSBookNo"
@@ -481,7 +481,7 @@ export default function BookForm() {
                 </Form.Item>
               </Col>
 
-              <Col md={5}>
+              <Col md={6}>
                 <Form.Item
                   label={
                     <>
@@ -499,7 +499,7 @@ export default function BookForm() {
                 </Form.Item>
               </Col>
 
-              <Col md={5}>
+              <Col md={6}>
                 <Form.Item
                   label={
                     <>
@@ -590,25 +590,25 @@ export default function BookForm() {
             </Paragraph>
 
             <Row gutter={16}>
-              <Col md={6}>
+              <Col md={5}>
                 <Form.Item name="mBookNo" label={<Text strong>07 – M. Book No</Text>} rules={[{ required: true }]}>
                   <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
               </Col>
 
-              <Col md={6}>
+              <Col md={5}>
                 <Form.Item name="sBookNo" label={<Text strong>08 – S. Book No</Text>} rules={[{ required: true }]}>
                   <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
               </Col>
 
-              <Col md={5}>
+              <Col md={6}>
                 <Form.Item name="bookGroupNo" label={<Text strong>09 – Book Group No (default 00)</Text>}>
                   <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
               </Col>
 
-              <Col md={5}>
+              <Col md={6}>
                 <Form.Item name="bookGroupNo" label={<Text strong>09a – Book Group No (default 00)</Text>}>
                   <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
