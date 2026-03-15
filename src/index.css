@@ -77,4 +77,21 @@ html, body {
   border-right: none !important;
 }
 
+/* Regular row */
+.ant-table-tbody > tr.regular-row > td {
+  background-color: #e6f7ff !important; /* light blue */
+}
 
+/* Deliberate row */
+.ant-table-tbody > tr.deliberate-row > td {
+  background-color: #fff7e6 !important; /* light orange */
+}
+
+/* Optional: hover effect override */
+.ant-table-tbody > tr.regular-row:hover > td {
+  background-color: #bae7ff !important; /* slightly darker blue */
+}
+
+.ant-table-tbody > tr.deliberate-row:hover > td {
+  background-color: #ffe7cc !important; /* slightly darker orange */
+}

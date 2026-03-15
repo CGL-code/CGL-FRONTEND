@@ -39,28 +39,12 @@ export default function BookForm() {
   const [loadingBooks, setLoadingBooks] = useState(false);
   const [insertCalculated, setInsertCalculated] = useState(false);
 
+  const formatMBook = (num) => (num !== undefined ? String(num).padStart(4, "0") : "");
+  const formatSBook = (num) => (num !== undefined ? String(num).padStart(2, "0") : "");
+
 
   // const isInsertMode = entryMode === "insert";
 
-  /* ===============================
-     REGULAR MODE AUTO NUMBER
-     =============================== */
-  // useEffect(() => {
-  //   if (entryMode === "regular") {
-  //     getNextRegularApi().then((res) => {
-  //       form.setFieldsValue({
-  //         mBookNo: res.data.mBookNo,
-  //         sBookNo: res.data.sBookNo,
-  //       });
-  //     });
-  //   } else {
-  //     // Clear numbers in insert mode
-  //     form.setFieldsValue({
-  //       mBookNo: undefined,
-  //       sBookNo: undefined,
-  //     });
-  //   }
-  // }, [entryMode, form]);
 
   useEffect(() => {
     if (entryMode === "regular") {
@@ -168,7 +152,7 @@ export default function BookForm() {
       setInsertCalculated(false);
       setEntryMode(null);
 
-    } catch  {
+    } catch {
       message.error("Save failed.");
     } finally {
       setSavingBook(false);
@@ -186,6 +170,7 @@ export default function BookForm() {
         "mBookNo",
         "sBookNo",
         "bookGroupNo",
+        "section",
         "bookTitle",
         "introParas",
       ]);
@@ -197,6 +182,7 @@ export default function BookForm() {
         mBookNo: values.mBookNo,
         sBookNo: values.sBookNo,
         bookGroupNo: values.bookGroupNo,
+        section: values.section,
         title: values.bookTitle,
         introParas: values.introParas,
       });
@@ -227,32 +213,6 @@ export default function BookForm() {
     }
   };
 
-  /* ===============================
-     TABLE COLUMNS
-     =============================== */
-  // const columns = [
-  //   { title: "M.BookNo", dataIndex: "mBookNo" },
-  //   { title: "S.BookNo", dataIndex: "sBookNo" },
-  //   { title: "Title", dataIndex: "title" },
-  //   { title: "Type", dataIndex: "typeOfEntry" },
-  //   { title: "Group No", dataIndex: "bookGroupNo" },
-
-  //   { title: "Section", dataIndex: "Section" },
-
-
-
-
-
-
-
-  //   {
-  //     title: "Introduction",
-  //     dataIndex: "introParas",
-  //     render: (text) =>
-  //       text && text.length > 60 ? text.slice(0, 60) + "..." : text,
-  //   },
-  // ];
-
   return (
     <Card
       style={{
@@ -279,7 +239,7 @@ export default function BookForm() {
       <Form
         form={form}
         layout="vertical"
-        initialValues={{ entryMode: "regular", bookGroupNo: 0 }}
+        initialValues={{ entryMode: "regular", bookGroupNo: 0, section: 0 }}
       >
         {/* PART 1 */}
         <Card size="small" style={{ marginBottom: 16, border: "4px double red" }}>
@@ -373,6 +333,8 @@ export default function BookForm() {
                   <InputNumber
                     disabled
                     style={{ width: "100%", border: "1px solid black" }}
+                    formatter={(value) => formatMBook(value)}
+                    parser={(value) => Number(value)}
                   />
                 </Form.Item>
               </Col>
@@ -392,6 +354,8 @@ export default function BookForm() {
                   <InputNumber
                     disabled
                     style={{ width: "100%", border: "1px solid black" }}
+                    formatter={(value) => formatSBook(value)}
+                    parser={(value) => Number(value)}
                   />
                 </Form.Item>
               </Col>
@@ -419,7 +383,7 @@ export default function BookForm() {
                 <Form.Item
                   label={
                     <>
-                      <Text strong>05a – Section</Text>
+                      <Text strong>05a –Book Section</Text>
                       <br />
                       <Text type="">(Existing reference)</Text>
                     </>
@@ -459,6 +423,8 @@ export default function BookForm() {
                 >
                   <InputNumber
                     style={{ width: "100%", border: "1px solid black" }}
+                    formatter={(value) => formatMBook(value)}
+                    parser={(value) => Number(value)}
                   />
                 </Form.Item>
               </Col>
@@ -477,6 +443,8 @@ export default function BookForm() {
                 >
                   <InputNumber
                     style={{ width: "100%", border: "1px solid black" }}
+                    formatter={(value) => formatSBook(value)}
+                    parser={(value) => Number(value)}
                   />
                 </Form.Item>
               </Col>
@@ -503,7 +471,7 @@ export default function BookForm() {
                 <Form.Item
                   label={
                     <>
-                      <Text strong>05a – Section</Text>
+                      <Text strong>05a – Book Section</Text>
                       <br />
                       <Text type="secondary">(Book Belongs)</Text>
                     </>
@@ -591,14 +559,40 @@ export default function BookForm() {
 
             <Row gutter={16}>
               <Col md={6}>
-                <Form.Item name="mBookNo" label={<Text strong>07 – M. Book No</Text>} rules={[{ required: true }]}>
-                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
+                <Form.Item
+                  name="mBookNo"
+                  label={<Text strong>07 – M. Book No</Text>}
+                  rules={[{ required: true }]}
+                >
+                  <InputNumber
+                    min={10}
+                    max={9990}
+                    step={10}
+                    style={{ width: "100%", border: "1px solid black" }}
+                    formatter={(value) =>
+                      value ? String(value).padStart(4, "0") : ""
+                    }
+                    parser={(value) => Number(value)}
+                  />
                 </Form.Item>
               </Col>
 
               <Col md={6}>
-                <Form.Item name="sBookNo" label={<Text strong>08 – S. Book No</Text>} rules={[{ required: true }]}>
-                  <InputNumber style={{ width: "100%", border: "1px solid black" }} />
+                <Form.Item
+                  name="sBookNo"
+                  label={<Text strong>08 – S. Book No</Text>}
+                  rules={[{ required: true }]}
+                >
+                  <InputNumber
+                    min={5}
+                    max={95}
+                    step={5}
+                    style={{ width: "100%", border: "1px solid black" }}
+                    formatter={(value) =>
+                      value ? String(value).padStart(2, "0") : ""
+                    }
+                    parser={(value) => Number(value)}
+                  />
                 </Form.Item>
               </Col>
 
@@ -609,7 +603,7 @@ export default function BookForm() {
               </Col>
 
               <Col md={6}>
-                <Form.Item name="bookGroupNo" label={<Text strong>09a – Book Group No (default 00)</Text>}>
+                <Form.Item name="section" label={<Text strong>09a – Book Section No (default 00)</Text>}>
                   <InputNumber style={{ width: "100%", border: "1px solid black" }} />
                 </Form.Item>
               </Col>
@@ -658,36 +652,91 @@ export default function BookForm() {
         )}
         {/* MODAL */}
         <Modal
-  title="All Books"
-  open={modalVisible}
-  centered
-  onCancel={() => setModalVisible(false)}
-  footer={[
-    <Button key="close" onClick={() => setModalVisible(false)}>
-      Close
-    </Button>,
-  ]}
-  width={1200}
-  bodyStyle={{ padding: 16 }}
->
+          title="All Books"
+          open={modalVisible}
+          centered
+          onCancel={() => setModalVisible(false)}
+          footer={[
+            <Button key="close" onClick={() => setModalVisible(false)}>
+              Close
+            </Button>,
+          ]}
+          width={1200}
+          bodyStyle={{ padding: 16 }}
+        >
 
           <Table
             rowKey="_id"
             loading={loadingBooks}
             dataSource={booksList}
             tableLayout="fixed"
-            pagination={{ pageSize: 8 }}
+            pagination={{ pageSize: 25 }}
+            rowClassName={(record) => {
+              if (record.typeOfEntry === "regular") return "regular-row";
+              if (record.typeOfEntry === "deliberate") return "deliberate-row";
+              return "";
+            }}
+            // or directly use rowStyle prop (AntD 5+)
+            rowStyle={(record) => {
+              if (record.typeOfEntry === "regular")
+                return { backgroundColor: "#e6f7ff" };
+              if (record.typeOfEntry === "deliberate")
+                return { backgroundColor: "#fff7e6" };
+              return {};
+            }}
             columns={[
+              {
+                title: "Insert",
+                width: 110,
+                render: (_, record, index) => {
+                  const nextRow = booksList[index + 1];
+
+                  const hideButton =
+                    nextRow &&
+                    nextRow.typeOfEntry === "deliberate" &&
+                    nextRow.mBookNo > record.mBookNo &&
+                    nextRow.mBookNo < record.mBookNo + 10;
+
+                  if (hideButton) return null;
+
+                  return (
+                    <Button
+                      size="small"
+                      style={{ color: "red", fontWeight: 600 }}
+                      onClick={() => {
+                        setEntryMode("insert");
+
+                        form.setFieldsValue({
+                          refMBookNo: record.mBookNo,
+                          refSBookNo: record.sBookNo,
+                          refBookGroupNo: record.bookGroupNo,
+                          refSection: record.section,
+                          existingBookTitle: record.title,
+                        });
+
+                        setModalVisible(false);
+                      }}
+                    >
+                      Ins Below
+                    </Button>
+                  );
+                },
+              },
+
               {
                 title: "M.Book No",
                 dataIndex: "mBookNo",
                 width: 90,
+                render: (num) => formatMBook(num),
               },
+
               {
                 title: "S.Book No",
                 dataIndex: "sBookNo",
                 width: 90,
+                render: (num) => formatSBook(num),
               },
+
               {
                 title: "Title",
                 dataIndex: "title",
@@ -703,25 +752,34 @@ export default function BookForm() {
                   </div>
                 ),
               },
+
               {
                 title: "Type",
                 dataIndex: "typeOfEntry",
-                width: 120,
+                width: 80,
+                render: (type) => {
+                  if (type === "regular") return "R";
+                  if (type === "deliberate") return "D";
+                  return "-";
+                },
               },
+
               {
                 title: "Group No",
                 dataIndex: "bookGroupNo",
                 width: 100,
               },
+
               {
                 title: "Section",
                 dataIndex: "section",
-                width: 120,
+                width: 100,
               },
+
               {
                 title: "Introduction",
                 dataIndex: "introParas",
-                width: 150,
+                width: 140,
                 render: (text) => (
                   <Button
                     type="link"
@@ -735,24 +793,40 @@ export default function BookForm() {
                 ),
               },
 
-            ]}
-            rowSelection={{
-              type: "radio",
-              onChange: (_, rows) => {
-                const book = rows[0];
+              {
+                title: "Action",
+                width: 170,
+                render: (_, record) => (
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        setSelectedIntro(record.introParas);
+                        setIntroModalVisible(true);
+                      }}
+                    >
+                      View
+                    </Button>
 
-                form.setFieldsValue({
-                  refMBookNo: book.mBookNo,
-                  refSBookNo: book.sBookNo,
-                  refBookGroupNo: book.bookGroupNo,
-                  refSection: book.section,
-                  existingBookTitle: book.title,
-                });
+                    <Button
+                      size="small"
+                      type="primary"
+                      onClick={() => handleEditBook(record)}
+                    >
+                      Edit
+                    </Button>
 
-                setModalVisible(false);
+                    <Button
+                      size="small"
+                      danger
+                      onClick={() => handleDeleteBook(record._id)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                ),
               },
-            }}
-
+            ]}
           />
         </Modal>
         <Modal
@@ -782,9 +856,6 @@ export default function BookForm() {
             </Button>
           </div>
         </Modal>
-
-
-        {/* <h1></h1> */}
       </Form>
     </Card>
   );
