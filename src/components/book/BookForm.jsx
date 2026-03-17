@@ -144,13 +144,21 @@ export default function BookForm() {
         section: form.getFieldValue("newSection"),
         title: values.newBookTitle,
         introParas: values.introParas,
+        reason: form.getFieldValue("insertReason"),
       });
 
       message.success("Inserted book saved successfully.");
 
       form.resetFields();
       setInsertCalculated(false);
+
+      // 🔥 force reset radio completely
       setEntryMode(null);
+
+      // 🔥 extra safety (important)
+      setTimeout(() => {
+        setEntryMode(null);
+      }, 0);
 
     } catch {
       message.error("Save failed.");
@@ -185,11 +193,12 @@ export default function BookForm() {
         section: values.section,
         title: values.bookTitle,
         introParas: values.introParas,
+        reason: form.getFieldValue("insertReason"),
       });
 
       message.success("Book saved successfully.");
       form.resetFields();
-      setEntryMode("regular");
+      setEntryMode(null);
     } catch (err) {
       message.error(err.response?.data?.error || "Save failed.");
     } finally {
@@ -239,7 +248,7 @@ export default function BookForm() {
       <Form
         form={form}
         layout="vertical"
-        initialValues={{ entryMode: "regular", bookGroupNo: 0, section: 0 }}
+        initialValues={{ bookGroupNo: 0, section: 0 }}
       >
         {/* PART 1 */}
         <Card size="small" style={{ marginBottom: 16, border: "4px double red" }}>
@@ -282,6 +291,7 @@ export default function BookForm() {
                   value="insert"
                   checked={entryMode === "insert"}
                   onChange={handleEntryModeChange}
+                  disabled={true}
                 />{" "}
                 <Text strong>
                   02 – Deliberate Insert – New Book (work in Part 2.)
@@ -774,6 +784,12 @@ export default function BookForm() {
                 title: "Section",
                 dataIndex: "section",
                 width: 100,
+              },
+              {
+                title: "Reason",
+                dataIndex: "reason",
+                width: 200,
+                render: (text) => text || "-",
               },
 
               {
