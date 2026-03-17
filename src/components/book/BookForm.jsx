@@ -517,7 +517,7 @@ export default function BookForm() {
             <Form.Item
               name="introParas"
               label={<Text strong>11 – Brief Introduction of the Book</Text>}
-              rules={[{ required: true }]}
+              // rules={[{ required: true }]}
             >
               <Input.TextArea
                 rows={4}
@@ -631,7 +631,7 @@ export default function BookForm() {
             <Form.Item
               name="introParas"
               label={<Text strong>11 – Brief Introduction of the Book</Text>}
-              rules={[{ required: true }]}
+              // rules={[{ required: true }]}
             >
               <Input.TextArea rows={4} style={{ border: "1.25px solid black" }} />
             </Form.Item>
